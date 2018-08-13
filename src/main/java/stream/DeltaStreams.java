@@ -1,4 +1,4 @@
-package util;
+package stream;
 
 import delta.Delta;
 import delta.Side;
@@ -8,7 +8,7 @@ import sun.plugin.javascript.navig.Array;
 import java.util.*;
 import java.util.stream.*;
 
-public class DeltaGenerators {
+public class DeltaStreams {
 
     private static final Random RND = new Random();
     private static final List<Integer> SIZES = IntStream.range(100, 9900).boxed().collect(Collectors.toList());

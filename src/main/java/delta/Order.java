@@ -1,6 +1,6 @@
 package delta;
 
-public class SimpleDelta implements Delta {
+public class Order implements Delta {
 
     private final double price;
     private final int size;
@@ -8,7 +8,7 @@ public class SimpleDelta implements Delta {
     private final long timestamp;
 
 
-    public SimpleDelta(double price, int size, Side side){
+    public Order(double price, int size, Side side){
         this.price = price;
         this.size = size;
         this.side = side;
