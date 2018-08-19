@@ -2,8 +2,7 @@ package stream;
 
 import delta.Delta;
 import delta.Side;
-import delta.SimpleDelta;
-import sun.plugin.javascript.navig.Array;
+import delta.Placement;
 
 import java.util.*;
 import java.util.stream.*;
@@ -16,7 +15,7 @@ public class DeltaStreams {
 
     public static Stream<Delta> getDummyDeltaStream(){
         return Stream.generate(() -> {
-            return new SimpleDelta(
+            return new Placement(
                     PRICES.get(RND.nextInt(PRICES.size())),
                     SIZES.get(RND.nextInt(SIZES.size())),
                     randomEnum(Side.class)
