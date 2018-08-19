@@ -1,22 +1,31 @@
 package state;
 
+import com.sun.javaws.exceptions.InvalidArgumentException;
 import delta.Placement;
 import delta.Side;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.OptionalLong;
 import java.util.function.Function;
 
-public class Limit {
+public class Limit implements Comparable<Limit>{
 
     private Side side;
-    private Double priceLevel;
+    private double priceLevel;
     private List<Placement> placements;
 
     public Limit(Side side, Double priceLevel) {
         this.side = side;
         this.priceLevel = priceLevel;
-        this.placements= new ArrayList<>();
+        this.placements = new ArrayList<>();
+    }
+
+    private Limit(Side side, Double priceLevel, List<Placement> placements) {
+        this.side = side;
+        this.priceLevel = priceLevel;
+        this.placements = placements;
     }
 
     public Side getSide() {
@@ -27,38 +36,36 @@ public class Limit {
         return priceLevel;
     }
 
-    public List<Placement> getOrders() {
-        return placements;
+    public List<Placement> getPlacements() {
+        return new ArrayList<>(placements);
+    }
+
+    public Optional<Long> getTotalVolume(){
+        return placements.stream()
+                .map(p -> p.getSize())
+                .reduce((a,b) -> a+b);
+    }
+
+    public int getPlacementCount(){
+        return placements.size();
+    }
+
+    // Places the placement on the limit
+    public void place(Placement placement) {
+        this.placements.add(placement);
+    }
+
+    // Removes the placement from the limit
+    public void remove(Placement placement){
+        this.placements.remove(placement);
+    }
+
+    @Override
+    public int compareTo(Limit o) {
+        return getPriceLevel().compareTo(o.getPriceLevel());
     }
 
     public boolean isEmpty() {
         return placements.isEmpty();
     }
-
-    private Limit apply(Placement placement, Function<Placement, Limit> function) {
-        return function.apply(placement);
-    }
-
-    public Limit place(Limit limit, Placement placement){
-        return apply(placement, o -> {
-           limit.placements.add(o);
-           return limit;
-        });
-    }
-
-    public Limit remove(Limit limit, Placement placement){
-        return apply(placement, o -> {
-            limit.placements.remove(o);
-            return limit;
-        });
-    }
-
-    public Limit place(long qty, Placement placement){
-        return null;
-    }
-
-    public Limit remove(long qty, Placement placement){
-        return null;
-    }
-
 }

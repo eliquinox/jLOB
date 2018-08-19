@@ -17,12 +17,12 @@ public class ListBasedLimitOrderBook implements LimitOrderBook{
 
     @Override
     public Placement getBestBid() {
-        return bids.get(0).getOrders().get(0);
+        return bids.get(0).getPlacements().get(0);
     }
 
     @Override
     public Placement getBestOffer() {
-        return offers.get(0).getOrders().get(0);
+        return offers.get(0).getPlacements().get(0);
     }
 
     public List<Limit> getLimit(Double priceLevel){

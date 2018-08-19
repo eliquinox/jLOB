@@ -2,7 +2,7 @@ package delta;
 
 public class Cancellation implements Delta {
 
-    private final long id = GLOBAL_ID.incrementAndGet();;
+    private final long id = GLOBAL_ID.incrementAndGet();
     private final double price;
     private final long size;
     private final Side side;

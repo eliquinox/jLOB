@@ -8,7 +8,7 @@ public class Trade implements Delta {
     private final Side side;
     private final long timestamp;
 
-    public Trade(double price, Side side, long size){
+    public Trade(double price, long size, Side side){
         this.price = price;
         this.size = size;
         this.side = side;

@@ -1,6 +1,9 @@
 package delta;
 
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 public class Placement implements Delta {
 
     private final long id = GLOBAL_ID.incrementAndGet();
@@ -17,9 +20,13 @@ public class Placement implements Delta {
     }
 
     public Placement cancel(Cancellation cancellation){
-        // updates the placement size and
-        // returns new placement object
         long newSize = getSize() - cancellation.getSize();
+        return new Placement(getPrice(), newSize, getSide());
+    }
+
+    public Placement match(Trade trade){
+        //TODO: evaluate redundancy given the same logic as cancellation
+        long newSize = getSize() - trade.getSize();
         return new Placement(getPrice(), newSize, getSide());
     }
 
@@ -49,26 +56,29 @@ public class Placement implements Delta {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
+
         if (o == null || getClass() != o.getClass()) return false;
+
         Placement placement = (Placement) o;
-        if (id != placement.id) return false;
-        if (Double.compare(placement.price, price) != 0) return false;
-        if (size != placement.size) return false;
-        if (timestamp != placement.timestamp) return false;
-        return side == placement.side;
+
+        return new EqualsBuilder()
+                .append(id, placement.id)
+                .append(price, placement.price)
+                .append(size, placement.size)
+                .append(timestamp, placement.timestamp)
+                .append(side, placement.side)
+                .isEquals();
     }
 
     @Override
     public int hashCode() {
-        int result;
-        long temp;
-        result = (int) (id ^ (id >>> 32));
-        temp = Double.doubleToLongBits(price);
-        result = 31 * result + (int) (temp ^ (temp >>> 32));
-        result = 31 * result + (int) (size ^ (size >>> 32));
-        result = 31 * result + side.hashCode();
-        result = 31 * result + (int) (timestamp ^ (timestamp >>> 32));
-        return result;
+        return new HashCodeBuilder(17, 37)
+                .append(id)
+                .append(price)
+                .append(size)
+                .append(side)
+                .append(timestamp)
+                .toHashCode();
     }
 
     @Override
