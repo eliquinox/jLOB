@@ -1,5 +1,5 @@
 package delta;
 
 public enum Type {
-    Placement, Cancellation, Market,
+    PLACEMENT, CANCELLATION, TRADE
 }

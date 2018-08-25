@@ -1,18 +1,21 @@
 package state;
 
-import com.sun.org.apache.xpath.internal.operations.Or;
-import delta.Delta;
+import delta.Cancellation;
 import delta.Placement;
-import javafx.print.PageLayout;
+import delta.Side;
+import delta.Trade;
 
-import java.util.function.Function;
 
 public interface LimitOrderBook extends State{
 
-    Placement getBestBid();
-
-    Placement getBestOffer();
-
-    LimitOrderBook apply(Placement placement, Function<Placement, LimitOrderBook> function);
+    Placement getBestBidPlacement();
+    Placement getBestOfferPlacement();
+    Limit getBestBidLimit();
+    Limit getBestOfferLimit();
+    Limit getLimit(Side side, Double priceLevel);
+    LimitOrderBook place(Placement placement);
+    LimitOrderBook match(Trade trade);
+    LimitOrderBook cancel(Cancellation cancellation);
+    boolean isEmpty();
 
 }

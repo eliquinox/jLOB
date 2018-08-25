@@ -1,12 +1,16 @@
 package delta;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 public class Cancellation implements Delta {
 
     private final long id = GLOBAL_ID.incrementAndGet();
-    private final double price;
-    private final long size;
+    private final Double price;
+    private final Long size;
     private final Side side;
     private final long timestamp;
+    private final Type type = Type.CANCELLATION;
 
     public Cancellation(Placement placement, long cancellationSize) {
         this.price = placement.getPrice();
@@ -21,12 +25,13 @@ public class Cancellation implements Delta {
     }
 
     @Override
-    public double getPrice() {
+
+    public Double getPrice() {
         return price;
     }
 
     @Override
-    public long getSize() {
+    public Long getSize() {
         return size;
     }
 
@@ -41,28 +46,35 @@ public class Cancellation implements Delta {
     }
 
     @Override
+    public Type getType() {
+        return type;
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Cancellation that = (Cancellation) o;
-        if (id != that.id) return false;
-        if (Double.compare(that.price, price) != 0) return false;
-        if (size != that.size) return false;
-        if (timestamp != that.timestamp) return false;
-        return side == that.side;
+        return new EqualsBuilder()
+                .append(id, that.id)
+                .append(price, that.price)
+                .append(size, that.size)
+                .append(timestamp, that.timestamp)
+                .append(side, that.side)
+                .append(type, that.type)
+                .isEquals();
     }
 
     @Override
     public int hashCode() {
-        int result;
-        long temp;
-        result = (int) (id ^ (id >>> 32));
-        temp = Double.doubleToLongBits(price);
-        result = 31 * result + (int) (temp ^ (temp >>> 32));
-        result = 31 * result + (int) (size ^ (size >>> 32));
-        result = 31 * result + side.hashCode();
-        result = 31 * result + (int) (timestamp ^ (timestamp >>> 32));
-        return result;
+        return new HashCodeBuilder(17, 37)
+                .append(id)
+                .append(price)
+                .append(size)
+                .append(side)
+                .append(timestamp)
+                .append(type)
+                .toHashCode();
     }
 
     @Override

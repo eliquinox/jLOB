@@ -7,12 +7,13 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 public class Placement implements Delta {
 
     private final long id = GLOBAL_ID.incrementAndGet();
-    private final double price;
-    private long size;
+    private final Double price;
+    private Long size;
     private final Side side;
     private final long timestamp;
+    private final Type type = Type.PLACEMENT;
 
-    public Placement(double price, long size, Side side){
+    public Placement(Double price, Long size, Side side){
         this.price = price;
         this.size = size;
         this.side = side;
@@ -25,7 +26,7 @@ public class Placement implements Delta {
     }
 
     public Placement match(Trade trade){
-        //TODO: evaluate redundancy given the same logic as cancellation
+        //TODO: DRY! evaluate redundancy given the same logic as cancellation
         long newSize = getSize() - trade.getSize();
         return new Placement(getPrice(), newSize, getSide());
     }
@@ -34,12 +35,12 @@ public class Placement implements Delta {
     public long getId() { return id; }
 
     @Override
-    public double getPrice() {
+    public Double getPrice() {
         return price;
     }
 
     @Override
-    public long getSize() {
+    public Long getSize() {
         return size;
     }
 
@@ -54,19 +55,23 @@ public class Placement implements Delta {
     }
 
     @Override
+    public Type getType() {
+        return type;
+    }
+
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-
         if (o == null || getClass() != o.getClass()) return false;
-
         Placement placement = (Placement) o;
-
         return new EqualsBuilder()
                 .append(id, placement.id)
                 .append(price, placement.price)
-                .append(size, placement.size)
                 .append(timestamp, placement.timestamp)
+                .append(size, placement.size)
                 .append(side, placement.side)
+                .append(type, placement.type)
                 .isEquals();
     }
 
@@ -78,6 +83,7 @@ public class Placement implements Delta {
                 .append(size)
                 .append(side)
                 .append(timestamp)
+                .append(type)
                 .toHashCode();
     }
 

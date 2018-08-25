@@ -1,14 +1,18 @@
 package delta;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 public class Trade implements Delta {
 
     private final long id = GLOBAL_ID.incrementAndGet();
-    private final double price;
-    private final long size;
+    private final Double price;
+    private final Long size;
     private final Side side;
     private final long timestamp;
+    private final Type type = Type.TRADE;
 
-    public Trade(double price, long size, Side side){
+    public Trade(Double price, Long size, Side side){
         this.price = price;
         this.size = size;
         this.side = side;
@@ -21,12 +25,12 @@ public class Trade implements Delta {
     }
 
     @Override
-    public double getPrice() {
+    public Double getPrice() {
         return price;
     }
 
     @Override
-    public long getSize() {
+    public Long getSize() {
         return size;
     }
 
@@ -41,28 +45,35 @@ public class Trade implements Delta {
     }
 
     @Override
+    public Type getType() {
+        return type;
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Trade trade = (Trade) o;
-        if (id != trade.id) return false;
-        if (Double.compare(trade.price, price) != 0) return false;
-        if (size != trade.size) return false;
-        if (timestamp != trade.timestamp) return false;
-        return side == trade.side;
+        return new EqualsBuilder()
+                .append(id, trade.id)
+                .append(price, trade.price)
+                .append(size, trade.size)
+                .append(timestamp, trade.timestamp)
+                .append(side, trade.side)
+                .append(type, trade.type)
+                .isEquals();
     }
 
     @Override
     public int hashCode() {
-        int result;
-        long temp;
-        result = (int) (id ^ (id >>> 32));
-        temp = Double.doubleToLongBits(price);
-        result = 31 * result + (int) (temp ^ (temp >>> 32));
-        result = 31 * result + (int) (size ^ (size >>> 32));
-        result = 31 * result + side.hashCode();
-        result = 31 * result + (int) (timestamp ^ (timestamp >>> 32));
-        return result;
+        return new HashCodeBuilder(17, 37)
+                .append(id)
+                .append(price)
+                .append(size)
+                .append(side)
+                .append(timestamp)
+                .append(type)
+                .toHashCode();
     }
 
     @Override
