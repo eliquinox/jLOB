@@ -8,6 +8,5 @@ import delta.Trade;
 
 public interface OrderBook extends State{
     LimitOrderBook place(Placement placement);
-    LimitOrderBook match(Trade trade);
     LimitOrderBook cancel(Cancellation cancellation);
 }
