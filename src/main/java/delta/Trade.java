@@ -2,21 +2,22 @@ package delta;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import state.Limit;
 
 public class Trade implements Delta {
 
     private final long id = GLOBAL_ID.incrementAndGet();
-    private final Double price;
-    private final Long size;
-    private final Side side;
     private final long timestamp;
+    private final Limit limit;
+    private final long size;
+    private final Side side;
     private final Type type = Type.TRADE;
 
-    public Trade(Double price, Long size, Side side){
-        this.price = price;
+    public Trade(Limit limit, long size, Side side){
+        this.timestamp = System.nanoTime();
+        this.limit = limit;
         this.size = size;
         this.side = side;
-        this.timestamp = System.nanoTime();
     }
 
     @Override
@@ -25,12 +26,12 @@ public class Trade implements Delta {
     }
 
     @Override
-    public Double getPrice() {
-        return price;
+    public Limit getLimit() {
+        return limit;
     }
 
     @Override
-    public Long getSize() {
+    public long getSize() {
         return size;
     }
 
@@ -49,41 +50,4 @@ public class Trade implements Delta {
         return type;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Trade trade = (Trade) o;
-        return new EqualsBuilder()
-                .append(id, trade.id)
-                .append(price, trade.price)
-                .append(size, trade.size)
-                .append(timestamp, trade.timestamp)
-                .append(side, trade.side)
-                .append(type, trade.type)
-                .isEquals();
-    }
-
-    @Override
-    public int hashCode() {
-        return new HashCodeBuilder(17, 37)
-                .append(id)
-                .append(price)
-                .append(size)
-                .append(side)
-                .append(timestamp)
-                .append(type)
-                .toHashCode();
-    }
-
-    @Override
-    public String toString() {
-        return "Trade{" +
-                "id=" + id +
-                ", price=" + price +
-                ", size=" + size +
-                ", side=" + side +
-                ", timestamp=" + timestamp +
-                '}';
-    }
 }

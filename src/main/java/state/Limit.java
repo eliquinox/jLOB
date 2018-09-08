@@ -2,23 +2,25 @@ package state;
 
 import delta.Placement;
 import delta.Side;
+import delta.Trade;
 import exceptions.LimitPlacementMismatchException;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+import java.lang.management.PlatformLoggingMXBean;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Limit implements Comparable<Limit>{
+public class Limit {
 
-    private Side side;
-    private Double priceLevel;
+    private final Side side;
+    private final long price;
     private List<Placement> placements;
 
-    public Limit(Side side, Double priceLevel) {
+    public Limit(Side side, long price) {
         this.side = side;
-        this.priceLevel = priceLevel;
+        this.price = price;
         this.placements = new ArrayList<>();
     }
 
@@ -26,73 +28,37 @@ public class Limit implements Comparable<Limit>{
         return side;
     }
 
-    public Double getPriceLevel() {
-        return priceLevel;
+    public long getPrice() {
+        return price;
     }
 
-    public List<Placement> getPlacements() {
-        return new ArrayList<>(placements);
+    public Placement place(Placement placement){
+        placements.add(placement);
+        return placement;
     }
 
-    public Long getTotalVolume(){
-        return placements.stream().map(p -> p.getSize()).reduce((a,b) -> a+b).orElse(0L);
+    public Placement remove(Placement placement){
+        placements.remove(placement);
+        return placement;
     }
 
-    public int getPlacementCount(){
-        return placements.size();
+    public long match(long tradeSize){
+        while (tradeSize > 0 && !placements.isEmpty()) {
+            Placement placement = placements.get(0);
+            long orderSize = placement.getSize();
+            if (orderSize > tradeSize) {
+                placement.reduce(tradeSize);
+                tradeSize = 0;
+            } else {
+                placements.remove(0);
+                tradeSize -= orderSize;
+            }
+        }
+        return tradeSize;
     }
 
-    public void place(Placement placement) throws LimitPlacementMismatchException {
-        if(!placement.getPrice().equals(priceLevel)|| placement.getSide() != side)
-            throw new LimitPlacementMismatchException("Placement and limit levels mismatch!");
-        this.placements.add(placement);
-    }
-
-    public void remove(Placement placement) throws LimitPlacementMismatchException {
-        if(!placement.getPrice().equals(priceLevel)|| placement.getSide() != side)
-            throw new LimitPlacementMismatchException("Placement and limit levels mismatch!");
-        this.placements.remove(placement);
-    }
-
-    public boolean isEmpty() {
+    public boolean isEmpty(){
         return placements.isEmpty();
     }
 
-    @Override
-    public int compareTo(Limit o) {
-        // Comparator.naturalOrder() will handle sorting as expected
-        // binarySearch to be ran without specifying a Comparator
-        return side == Side.OFFER ? o.getPriceLevel().compareTo(priceLevel) :
-                priceLevel.compareTo(o.getPriceLevel());
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Limit limit = (Limit) o;
-        return new EqualsBuilder()
-                .append(side, limit.side)
-                .append(priceLevel, limit.priceLevel)
-                .append(placements, limit.placements)
-                .isEquals();
-    }
-
-    @Override
-    public int hashCode() {
-        return new HashCodeBuilder(17, 37)
-                .append(side)
-                .append(priceLevel)
-                .append(placements)
-                .toHashCode();
-    }
-
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this)
-                .append("side", side)
-                .append("priceLevel", priceLevel)
-                .append("placements", placements)
-                .toString();
-    }
 }
