@@ -10,15 +10,13 @@ public class Cancellation implements Delta {
     private final long timestamp;
     private final Limit limit;
     private final long size;
-    private final Side side;
     private final Type type = Type.CANCELLATION;
 
     public Cancellation(Placement placement, long cancellationSize) {
         this.timestamp = System.nanoTime();
-        this.id = placement.getId();
+        this.id = placement.getId(); //Different delta ID
         this.limit = placement.getLimit();
         this.size = cancellationSize;
-        this.side = placement.getSide();
     }
 
     @Override
@@ -37,8 +35,13 @@ public class Cancellation implements Delta {
     }
 
     @Override
+    public long getPrice(){
+        return limit.getPrice();
+    }
+
+    @Override
     public Side getSide() {
-        return side;
+        return limit.getSide();
     }
 
     @Override

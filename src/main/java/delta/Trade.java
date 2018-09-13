@@ -50,4 +50,8 @@ public class Trade implements Delta {
         return type;
     }
 
+    public long getPrice(){
+        return limit.getPrice();
+    }
+
 }

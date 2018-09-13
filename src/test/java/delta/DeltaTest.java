@@ -1,6 +1,7 @@
 package delta;
 
 import junit.framework.TestCase;
+import state.Limit;
 
 public class DeltaTest extends TestCase{
 
@@ -11,46 +12,68 @@ public class DeltaTest extends TestCase{
     }
 
     public void testPlacementCreation(){
-        Placement placement = new Placement(100.0,10L, Side.BID);
-        assertEquals(100.0, placement.getPrice());
-        assertEquals(10L, (long) placement.getSize());
+        Limit limit = new Limit(Side.BID, 100);
+        Placement placement = new Placement(limit,10L);
+        assertEquals(100L, placement.getPrice());
+        assertEquals(10L, placement.getSize());
         assertEquals(Side.BID, placement.getSide());
     }
 
     public void testCancellationCreation(){
-        Placement placement = new Placement(100.0,10L, Side.BID);
+        Limit limit = new Limit(Side.BID, 100);
+        Placement placement = new Placement(limit,10L);
         Cancellation cancellation = new Cancellation(placement,5);
-        assertEquals(100.0, placement.getPrice());
-        assertEquals(10L, (long) placement.getSize());
-        assertEquals(5L, (long) cancellation.getSize());
+        assertEquals(100L, placement.getPrice());
+        assertEquals(10L, placement.getSize());
+        assertEquals(5L, cancellation.getSize());
     }
 
     public void testTradeCreation(){
-        Trade trade = new Trade(100.0, 10L, Side.BID);
-        assertEquals(100.0, trade.getPrice());
+        Limit limit = new Limit(Side.BID, 100);
+        Trade trade = new Trade(limit, 10L, Side.BID);
+        assertEquals(100L, trade.getPrice());
         assertEquals(10L, (long) trade.getSize());
         assertEquals(Side.BID, trade.getSide());
     }
 
     public void testPartialCancellation(){
-        Placement placement = new Placement(100.0,10L, Side.BID);
+        Limit limit = new Limit(Side.BID, 100);
+        Placement placement = new Placement(limit,10L);
         Cancellation cancellation = new Cancellation(placement,5);
-        placement = placement.cancel(cancellation);
-        assertEquals(5, (long) placement.getSize());
-        assertEquals(100.0, placement.getPrice());
+        placement.reduce(cancellation.getSize());
+        assertEquals(cancellation.getId(), placement.getId());
+        assertEquals(5, placement.getSize());
+        assertEquals(100, placement.getPrice());
+    }
+
+    public void testFullCancellation(){
+        Limit limit = new Limit(Side.BID, 100);
+        Placement placement = new Placement(limit,10L);
+        Cancellation cancellation = new Cancellation(placement,10);
+        placement.reduce(cancellation.getSize());
+        assertEquals(cancellation.getId(), placement.getId());
+        assertEquals(0, placement.getSize());
+        assertEquals(100, placement.getPrice());
     }
 
     public void testPartialMatch(){
-        Placement placement = new Placement(100.0,10L, Side.BID);
-        Trade trade = new Trade(100.0,5L,Side.BID);
-        placement = placement.match(trade);
-        assertEquals(5L, (long) placement.getSize());
-        assertEquals(100.0, placement.getPrice());
+        Limit limit = new Limit(Side.BID, 100);
+        Placement placement = new Placement(limit,10L);
+        Trade trade = new Trade(limit,5L,Side.BID);
+        placement.reduce(trade.getSize());
+        assertFalse(trade.getId() == placement.getId());
+        assertEquals(5L, placement.getSize());
+        assertEquals(100, placement.getPrice());
     }
 
-    public void testToString(){
-        Placement placement = new Placement(100.0,10L, Side.BID);
-        System.out.println(placement);
+    public void testFullMatch(){
+        Limit limit = new Limit(Side.BID, 100);
+        Placement placement = new Placement(limit,10L);
+        Trade trade = new Trade(limit,10L,Side.BID);
+        placement.reduce(trade.getSize());
+        assertFalse(trade.getId() == placement.getId());
+        assertEquals(0, placement.getSize());
+        assertEquals(100, placement.getPrice());
     }
 
 }

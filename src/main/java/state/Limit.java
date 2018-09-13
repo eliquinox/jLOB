@@ -57,6 +57,16 @@ public class Limit {
         return tradeSize;
     }
 
+    public long getVolume(){
+        return placements.stream()
+                .map(Placement::getSize)
+                .reduce(0L, (a,b) -> a + b);
+    }
+
+    public int getPlacementCount(){
+        return placements.size();
+    }
+
     public boolean isEmpty(){
         return placements.isEmpty();
     }

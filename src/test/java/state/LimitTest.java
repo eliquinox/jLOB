@@ -2,6 +2,7 @@ package state;
 
 import delta.Placement;
 import delta.Side;
+import delta.Trade;
 import exceptions.LimitPlacementMismatchException;
 import junit.framework.TestCase;
 import org.junit.Test;
@@ -17,51 +18,65 @@ public class LimitTest extends TestCase {
     }
 
     public void testLimitCreation() {
-        Limit limit = new Limit(Side.BID, 100.0);
+        Limit limit = new Limit(Side.BID, 100L);
+        assertTrue(limit.isEmpty());
         assertEquals(Side.BID, limit.getSide());
-        assertEquals(100.0, limit.getPriceLevel());
+        assertEquals(100L, limit.getPrice());
     }
 
 
-    public void testLimitPlace() throws LimitPlacementMismatchException {
-        Placement placement = new Placement(100.0, 10L, Side.BID);
-        Placement placement1 = new Placement(100.0, 10L, Side.BID);
-        Placement placement2 = new Placement(100.0, 10L, Side.BID);
-        Limit limit = new Limit(Side.BID, 100.0);
+    public void testLimitPlace() {
+        Limit limit = new Limit(Side.BID, 100L);
+        Placement placement = new Placement(limit, 10L);
+        Placement placement1 = new Placement(limit, 10L);
+        Placement placement2 = new Placement(limit, 10L);
         assertEquals(placement.getSide(), limit.getSide());
-        assertEquals(placement.getPrice(), limit.getPriceLevel());
+        assertEquals(placement.getPrice(), limit.getPrice());
         limit.place(placement);limit.place(placement1);limit.place(placement2);
-        assertEquals(Long.valueOf(30L), limit.getTotalVolume());
-        assertEquals(limit.getPlacements(), Arrays.asList(placement, placement1, placement2));
+        assertEquals(3, limit.getPlacementCount());
+        assertEquals(30L, limit.getVolume());
     }
 
-//    @Test(expected = LimitPlacementMismatchException.class)
-//    public void testLimitPlaceMismatch() throws LimitPlacementMismatchException {
-//        //TODO: Enforce same price levels between placements and limit; .getTotalVolume() handle the boiler plate
-//        Placement placement = new Placement(99.0, 10L, Side.BID);
-//        Limit limit = new Limit(Side.BID, 100.0);
-//        limit.place(placement);
-//    }
-
-    public void testLimitRemove() throws LimitPlacementMismatchException {
-        Placement placement = new Placement(100.0, 10L, Side.BID);
-        Placement placement1 = new Placement(100.0, 10L, Side.BID);
-        Placement placement2 = new Placement(100.0, 10L, Side.BID);
-        Limit limit = new Limit(Side.BID, 100.0);
-        assertEquals(placement.getSide(), limit.getSide());
-        assertEquals(placement.getPrice(), limit.getPriceLevel());
+    public void testLimitRemove() {
+        Limit limit = new Limit(Side.BID, 100L);
+        Placement placement = new Placement(limit, 10L);
+        Placement placement1 = new Placement(limit, 10L);
+        Placement placement2 = new Placement(limit, 10L);
         limit.place(placement);limit.place(placement1);limit.place(placement2);
         limit.remove(placement);limit.remove(placement1);limit.remove(placement2);
         assertTrue(limit.isEmpty());
-        assertEquals(Long.valueOf(0), limit.getTotalVolume());
     }
 
-    public void testLimitSize() throws LimitPlacementMismatchException {
-        Placement placement = new Placement(100.0, 10L, Side.BID);
-        Limit limit = new Limit(Side.BID, 100.0);
-        limit.place(placement);
-        assertEquals(1, limit.getPlacementCount());
+    public void testLimitPartialMatch() {
+        Limit limit = new Limit(Side.BID, 100L);
+        Limit limit1 = new Limit(Side.OFFER, 100L);
+        Placement placement = new Placement(limit, 10L);
+        Placement placement1 = new Placement(limit1, 5L);
+        limit.place(placement); limit1.place(placement1);
+        limit.match(placement1.getSize());
+        assertEquals(5L, placement.getSize());
+        assertEquals(5L, limit.getVolume());
+    }
 
+    public void testLimitFullMatch(){
+        Limit limit = new Limit(Side.BID, 100L);
+        Limit limit1 = new Limit(Side.OFFER, 100L);
+        Placement placement = new Placement(limit, 10L);
+        Placement placement1 = new Placement(limit1, 10L);
+        limit.place(placement); limit1.place(placement1);
+        limit.match(placement1.getSize());
+        assertEquals(0L, limit.getVolume());
+    }
+
+    public void testLimitOverMatch(){
+        Limit limit = new Limit(Side.BID, 100L);
+        Limit limit1 = new Limit(Side.OFFER, 100L);
+        Placement placement = new Placement(limit, 10L);
+        Placement placement1 = new Placement(limit1, 20L);
+        limit.place(placement); limit1.place(placement1);
+        long remainder = limit.match(placement1.getSize());
+        assertEquals(0L, limit.getVolume());
+        assertEquals(10L, remainder);
     }
 
 }

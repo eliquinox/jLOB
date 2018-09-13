@@ -9,6 +9,7 @@ public interface Delta {
     long getId();
     Limit getLimit();
     long getSize();
+    long getPrice();
     Side getSide();
     long getTimestamp();
     Type getType();

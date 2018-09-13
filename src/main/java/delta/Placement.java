@@ -1,7 +1,5 @@
 package delta;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
 import state.Limit;
 
 public class Placement implements Delta {
@@ -10,18 +8,12 @@ public class Placement implements Delta {
     private final long timestamp;
     private Limit limit;
     private long size;
-    private final Side side;
     private final Type type = Type.PLACEMENT;
 
-    public Placement(Limit limit, long size, Side side){
+    public Placement(Limit limit, long size){
         this.timestamp = System.nanoTime();
         this.limit = limit;
         this.size = size;
-        this.side = side;
-    }
-
-    public void reduce(long size){
-        this.size -= size;
     }
 
     @Override
@@ -40,8 +32,13 @@ public class Placement implements Delta {
     }
 
     @Override
+    public long getPrice(){
+        return limit.getPrice();
+    }
+
+    @Override
     public Side getSide() {
-        return side;
+        return limit.getSide();
     }
 
     @Override
@@ -54,8 +51,8 @@ public class Placement implements Delta {
         return type;
     }
 
-    public long getPrice(){
-        return limit.getPrice();
+    public void reduce(long size){
+        this.size -= size;
     }
 
 }

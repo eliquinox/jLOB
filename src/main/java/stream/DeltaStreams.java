@@ -14,11 +14,12 @@ public class DeltaStreams {
     private static final List<Double> PRICES = DoubleStream.iterate(975, d -> d + 0.5).limit(100).boxed().collect(Collectors.toList());
 
     public static Stream<Delta> getDummyDeltaStream(){
-        return Stream.generate(() -> new Placement(
-                PRICES.get(RND.nextInt(PRICES.size())),
-                SIZES.get(RND.nextInt(SIZES.size())),
-                randomEnum(Side.class)
-        ));
+        return null;
+//                Stream.generate(() -> new Placement(
+//                PRICES.get(RND.nextInt(PRICES.size())),
+//                SIZES.get(RND.nextInt(SIZES.size())),
+//                randomEnum(Side.class)
+//        ));
     }
 
     private static <T extends Enum<?>> T randomEnum(Class<T> cls){
