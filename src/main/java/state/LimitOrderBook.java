@@ -6,6 +6,7 @@ import delta.Side;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectRBTreeMap;
 import it.unimi.dsi.fastutil.longs.LongComparators;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 public class LimitOrderBook implements OrderBook{
 
@@ -125,4 +126,13 @@ public class LimitOrderBook implements OrderBook{
         return levels.get(levels.firstLongKey());
     }
 
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this)
+                .append("timestamp", timestamp)
+                .append("bids", bids)
+                .append("offers", offers)
+                .append("placements", placements)
+                .toString();
+    }
 }

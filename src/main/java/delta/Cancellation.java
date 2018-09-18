@@ -1,5 +1,6 @@
 package delta;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import state.Limit;
 
 public class Cancellation implements Delta {
@@ -46,4 +47,13 @@ public class Cancellation implements Delta {
         return timestamp;
     }
 
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this)
+                .append("id", id)
+                .append("timestamp", timestamp)
+                .append("limit", limit)
+                .append("size", size)
+                .toString();
+    }
 }

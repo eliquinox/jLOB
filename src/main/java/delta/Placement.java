@@ -1,5 +1,6 @@
 package delta;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import state.Limit;
 
 public class Placement implements Delta {
@@ -49,4 +50,14 @@ public class Placement implements Delta {
         this.size -= size;
     }
 
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this)
+                .append("id", id)
+                .append("timestamp", timestamp)
+                .append("side", getSide())
+                .append("price", getPrice())
+                .append("size", size)
+                .toString();
+    }
 }
