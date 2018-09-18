@@ -22,12 +22,4 @@ public class LimitOrderBookTest extends TestCase {
         assertTrue(book.isEmpty());
     }
 
-    public void testLimitPlacement(){
-        Limit limit = new Limit(Side.BID, 100L);
-        Placement placement = new Placement(limit, 10L);
-        LimitOrderBook book = LimitOrderBook.empty();
-        book.place(placement);
-        placement.getLimit();
-    }
-
 }
