@@ -8,7 +8,6 @@ public class Placement implements Delta {
     private final long timestamp;
     private Limit limit;
     private long size;
-    private final Type type = Type.PLACEMENT;
 
     public Placement(Limit limit, long size){
         this.timestamp = System.nanoTime();
@@ -44,11 +43,6 @@ public class Placement implements Delta {
     @Override
     public long getTimestamp() {
         return timestamp;
-    }
-
-    @Override
-    public Type getType() {
-        return type;
     }
 
     public void reduce(long size){

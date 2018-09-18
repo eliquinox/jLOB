@@ -2,14 +2,12 @@ package state;
 
 import delta.Placement;
 import delta.Side;
-import delta.Trade;
-import exceptions.LimitPlacementMismatchException;
 import junit.framework.TestCase;
-import org.junit.Test;
-import java.util.Arrays;
 
 
 public class LimitTest extends TestCase {
+
+    //TODO: Check for correct limit / side price arguments on construction
 
     @Override
     protected void tearDown() throws Exception {

@@ -12,5 +12,4 @@ public interface Delta {
     long getPrice();
     Side getSide();
     long getTimestamp();
-    Type getType();
 }

@@ -3,7 +3,6 @@ package state;
 import delta.Cancellation;
 import delta.Placement;
 import delta.Side;
-import delta.Trade;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectRBTreeMap;
 import it.unimi.dsi.fastutil.longs.LongComparators;
@@ -35,6 +34,10 @@ public class LimitOrderBook implements OrderBook{
         return new LimitOrderBook();
     }
 
+    public boolean isEmpty(){
+        return bids.isEmpty() && offers.isEmpty() && placements.isEmpty();
+    }
+
     @Override
     public long getTimestamp() {
         return timestamp;
@@ -52,12 +55,12 @@ public class LimitOrderBook implements OrderBook{
 
     private LimitOrderBook bid(Placement placement){
         long remainingQuantity = placement.getSize();
-        Limit limit  = getBestLevel(offers);
+        Limit limit  = getBestLimit(offers);
         while (remainingQuantity > 0 && limit != null && limit.getPrice() <= placement.getPrice()) {
             remainingQuantity = limit.match(placement.getSize());
             if (limit.isEmpty())
                 limit.remove(placement);
-            limit = getBestLevel(offers);
+            limit = getBestLimit(offers);
         }
         if (remainingQuantity > 0) {
             placements.put(placement.getId(), place(bids, placement));
@@ -67,12 +70,12 @@ public class LimitOrderBook implements OrderBook{
 
     private LimitOrderBook offer(Placement placement){
         long remainingQuantity = placement.getSize();
-        Limit limit = getBestLevel(bids);
+        Limit limit = getBestLimit(bids);
         while (remainingQuantity > 0 && limit != null && limit.getPrice() >= placement.getPrice()) {
             remainingQuantity = limit.match(placement.getSize());
             if (limit.isEmpty())
                 bids.remove(limit.getPrice());
-            limit = getBestLevel(bids);
+            limit = getBestLimit(bids);
         }
         if (remainingQuantity > 0) {
             placements.put(placement.getId(), place(offers, placement));
@@ -116,7 +119,7 @@ public class LimitOrderBook implements OrderBook{
             offers.remove(limit.getPrice());
     }
 
-    private Limit getBestLevel(Long2ObjectRBTreeMap<Limit> levels) {
+    private Limit getBestLimit(Long2ObjectRBTreeMap<Limit> levels) {
         if (levels.isEmpty())
             return null;
         return levels.get(levels.firstLongKey());

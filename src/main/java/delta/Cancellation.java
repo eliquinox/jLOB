@@ -1,7 +1,5 @@
 package delta;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
 import state.Limit;
 
 public class Cancellation implements Delta {
@@ -10,11 +8,10 @@ public class Cancellation implements Delta {
     private final long timestamp;
     private final Limit limit;
     private final long size;
-    private final Type type = Type.CANCELLATION;
 
     public Cancellation(Placement placement, long cancellationSize) {
         this.timestamp = System.nanoTime();
-        this.id = placement.getId(); //Different delta ID
+        this.id = placement.getId();
         this.limit = placement.getLimit();
         this.size = cancellationSize;
     }
@@ -47,11 +44,6 @@ public class Cancellation implements Delta {
     @Override
     public long getTimestamp() {
         return timestamp;
-    }
-
-    @Override
-    public Type getType() {
-        return type;
     }
 
 }

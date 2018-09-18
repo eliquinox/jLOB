@@ -28,52 +28,18 @@ public class DeltaTest extends TestCase{
         assertEquals(5L, cancellation.getSize());
     }
 
-    public void testTradeCreation(){
-        Limit limit = new Limit(Side.BID, 100);
-        Trade trade = new Trade(limit, 10L, Side.BID);
-        assertEquals(100L, trade.getPrice());
-        assertEquals(10L, (long) trade.getSize());
-        assertEquals(Side.BID, trade.getSide());
-    }
-
-    public void testPartialCancellation(){
+    public void testPartialReduce(){
         Limit limit = new Limit(Side.BID, 100);
         Placement placement = new Placement(limit,10L);
-        Cancellation cancellation = new Cancellation(placement,5);
-        placement.reduce(cancellation.getSize());
-        assertEquals(cancellation.getId(), placement.getId());
-        assertEquals(5, placement.getSize());
-        assertEquals(100, placement.getPrice());
-    }
-
-    public void testFullCancellation(){
-        Limit limit = new Limit(Side.BID, 100);
-        Placement placement = new Placement(limit,10L);
-        Cancellation cancellation = new Cancellation(placement,10);
-        placement.reduce(cancellation.getSize());
-        assertEquals(cancellation.getId(), placement.getId());
-        assertEquals(0, placement.getSize());
-        assertEquals(100, placement.getPrice());
-    }
-
-    public void testPartialMatch(){
-        Limit limit = new Limit(Side.BID, 100);
-        Placement placement = new Placement(limit,10L);
-        Trade trade = new Trade(limit,5L,Side.BID);
-        placement.reduce(trade.getSize());
-        assertFalse(trade.getId() == placement.getId());
+        placement.reduce(5L);
         assertEquals(5L, placement.getSize());
-        assertEquals(100, placement.getPrice());
     }
 
-    public void testFullMatch(){
+    public void testFullReduce(){
         Limit limit = new Limit(Side.BID, 100);
         Placement placement = new Placement(limit,10L);
-        Trade trade = new Trade(limit,10L,Side.BID);
-        placement.reduce(trade.getSize());
-        assertFalse(trade.getId() == placement.getId());
-        assertEquals(0, placement.getSize());
-        assertEquals(100, placement.getPrice());
+        placement.reduce(10L);
+        assertEquals(0L, placement.getSize());
     }
 
 }
