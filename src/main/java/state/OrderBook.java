@@ -5,6 +5,6 @@ import delta.Placement;
 
 
 public interface OrderBook extends State{
-    LimitOrderBook place(Placement placement);
-    LimitOrderBook cancel(Cancellation cancellation);
+    void place(Placement placement);
+    void cancel(Cancellation cancellation);
 }

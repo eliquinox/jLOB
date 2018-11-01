@@ -11,13 +11,13 @@ public class StreamsTest {
         Stream<Placement> stream = DeltaStreams.getDummyPlacementStream();
         stream.forEach(p -> {
             System.out.println(p);
-            //book.place(p);
+            book.place(p);
             try {
                 Thread.sleep(500);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            //System.out.println(book);
+            System.out.println(book);
         });
     }
 }

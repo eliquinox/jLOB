@@ -2,6 +2,7 @@ package state;
 
 import delta.Placement;
 import delta.Side;
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,9 +37,10 @@ public class Limit {
         return placement;
     }
 
-    public long match(long tradeSize){
+    public long match(long tradeSize, Long2ObjectOpenHashMap<Placement> placementIds){
         while (tradeSize > 0 && !placements.isEmpty()) {
             Placement placement = placements.get(0);
+            long restingPlacementId = placement.getId();
             long orderSize = placement.getSize();
             if (orderSize > tradeSize) {
                 placement.reduce(tradeSize);
@@ -46,6 +48,7 @@ public class Limit {
             } else {
                 placements.remove(0);
                 tradeSize -= orderSize;
+                placementIds.remove(restingPlacementId);
             }
         }
         return tradeSize;
