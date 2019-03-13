@@ -24,13 +24,12 @@ public class StreamsTest {
         LimitOrderBook limitOrderBook = LimitOrderBook.empty();
         int[] nPlacementPicker = {4, 8, 16, 32, 64}; // Mesh to pick n of placements per limit from;
         int[] vPlacementPicker = {128, 256, 512, 1024, 2048}; // Mesh to pick volume of placements from;
-
-        //Create price grid
-        LongStream.range(mid - limitsPerSide * tickSize, mid + limitsPerSide * tickSize)
+        long midTick = mid * tickSize;
+        LongStream.range(mid - limitsPerSide, mid + limitsPerSide)
                 .forEach(price -> {
                     int nps = nPlacementPicker[RND.nextInt(nPlacementPicker.length)];
                     long p = price * tickSize;
-                    if(price < mid * tickSize){
+                    if(p < midTick){
                         Limit limit = new Limit(Side.BID, p);
                         IntStream.range(0, nps).forEach(i -> {
                             int amount = vPlacementPicker[RND.nextInt(vPlacementPicker.length)];
@@ -48,22 +47,26 @@ public class StreamsTest {
         return limitOrderBook;
     }
 
+    static Stream<Placement> placementStream(int limitsPerSide, int tickSize, long mid, double probMkt){
+        int[] vPlacementPicker = {128, 256, 512, 1024, 2048}; // Mesh to pick volume of placements from;
+        long midTick = mid * tickSize;
+        return RND.longs(mid - limitsPerSide, mid + limitsPerSide)
+                .mapToObj(price -> {
+                    long p = price * tickSize;
+                    int amount = vPlacementPicker[RND.nextInt(vPlacementPicker.length)];
+                    if(p < midTick){
+                        Limit limit = new Limit(Side.BID, p);
+                        return new Placement(limit, amount);
+                    } else {
+                        Limit limit = new Limit(Side.OFFER, p);
+                        return new Placement(limit, amount);
+                    }
+                });
+    }
+
     public static void main(String[] args){
-
-        LimitOrderBook book = getRandomizedOrderBook(50, 25, 5000);
-//        LimitOrderBook book = LimitOrderBook.empty();
-        System.out.println(book);
-        Stream<Placement> stream = DeltaStreams.getDummyPlacementStream();
-        stream.forEach(p -> {
-            System.out.println(p);
-            book.place(p);
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            System.out.println(book);
-        });
-
+        LimitOrderBook book = getRandomizedOrderBook(50, 10, 1000);
+        placementStream(50, 10, 1000, 0.0)
+                .forEach(System.out::println);
     }
 }

@@ -10,7 +10,6 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 public class LimitOrderBook {
 
-    private final long timestamp;
     private Long2ObjectRBTreeMap<Limit> bids;
     private Long2ObjectRBTreeMap<Limit> offers;
     private Long2ObjectOpenHashMap<Placement> placements;
@@ -19,14 +18,12 @@ public class LimitOrderBook {
                           Long2ObjectRBTreeMap<Limit> bids,
                           Long2ObjectRBTreeMap<Limit> offers,
                           Long2ObjectOpenHashMap<Placement> placements){
-        this.timestamp = timestamp;
         this.bids = bids;
         this.offers = offers;
         this.placements = placements;
     }
 
     private LimitOrderBook(){
-        this.timestamp = System.nanoTime();
         this.bids = new Long2ObjectRBTreeMap<>(LongComparators.OPPOSITE_COMPARATOR);
         this.offers = new Long2ObjectRBTreeMap<>(LongComparators.NATURAL_COMPARATOR);
         this.placements = new Long2ObjectOpenHashMap<>();
@@ -38,10 +35,6 @@ public class LimitOrderBook {
 
     public boolean isEmpty(){
         return bids.isEmpty() && offers.isEmpty() && placements.isEmpty();
-    }
-
-    public long getTimestamp() {
-        return timestamp;
     }
 
     public void place(Placement placement) {
@@ -126,7 +119,6 @@ public class LimitOrderBook {
 
     public String toString() {
         return new ToStringBuilder(this)
-                .append("timestamp", timestamp)
                 .append("bids", bids)
                 .append("offers", offers)
                 .append("placements", placements)
