@@ -19,7 +19,7 @@ public class StreamsTest {
 
     private static final Random RND = new Random();
 
-    static LimitOrderBook getRandomizedOrderBook(int limitsPerSide, int placementsPerLimit, int tickSize, long mid){
+    static LimitOrderBook getRandomizedOrderBook(int limitsPerSide, int tickSize, long mid){
         Preconditions.checkState(mid - limitsPerSide * tickSize >= 0, "Cannot have negative prices");
         LimitOrderBook limitOrderBook = LimitOrderBook.empty();
         int[] nPlacementPicker = {4, 8, 16, 32, 64}; // Mesh to pick n of placements per limit from;
@@ -50,17 +50,20 @@ public class StreamsTest {
 
     public static void main(String[] args){
 
+        LimitOrderBook book = getRandomizedOrderBook(50, 25, 5000);
 //        LimitOrderBook book = LimitOrderBook.empty();
-//        Stream<Placement> stream = DeltaStreams.getDummyPlacementStream();
-//        stream.forEach(p -> {
-//            System.out.println(p);
-//            book.place(p);
-//            try {
-//                Thread.sleep(500);
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
-//            System.out.println(book);
-//        });
+        System.out.println(book);
+        Stream<Placement> stream = DeltaStreams.getDummyPlacementStream();
+        stream.forEach(p -> {
+            System.out.println(p);
+            book.place(p);
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            System.out.println(book);
+        });
+
     }
 }
