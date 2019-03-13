@@ -15,13 +15,13 @@ public class DeltaStreams {
 
     public static Stream<Placement> getDummyPlacementStream(){
         return Stream.generate(() -> {
-            Side side = randomEnum(Side.class);
+            Side side = randomEnumConstant(Side.class);
             Limit limit = new Limit(side, PRICES.get(RND.nextInt(PRICES.size())));
             return new Placement(limit,SIZES.get(RND.nextInt(SIZES.size())));
         }).limit(100);
     }
 
-    private static <T extends Enum<?>> T randomEnum(Class<T> cls){
+    private static <T extends Enum<?>> T randomEnumConstant(Class<T> cls){
         int x = RND.nextInt(cls.getEnumConstants().length);
         return cls.getEnumConstants()[x];
     }

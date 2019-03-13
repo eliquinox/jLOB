@@ -8,12 +8,22 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectRBTreeMap;
 import it.unimi.dsi.fastutil.longs.LongComparators;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-public class LimitOrderBook implements OrderBook{
+public class LimitOrderBook {
 
     private final long timestamp;
     private Long2ObjectRBTreeMap<Limit> bids;
     private Long2ObjectRBTreeMap<Limit> offers;
     private Long2ObjectOpenHashMap<Placement> placements;
+
+    public LimitOrderBook(long timestamp,
+                          Long2ObjectRBTreeMap<Limit> bids,
+                          Long2ObjectRBTreeMap<Limit> offers,
+                          Long2ObjectOpenHashMap<Placement> placements){
+        this.timestamp = timestamp;
+        this.bids = bids;
+        this.offers = offers;
+        this.placements = placements;
+    }
 
     private LimitOrderBook(){
         this.timestamp = System.nanoTime();
@@ -30,12 +40,10 @@ public class LimitOrderBook implements OrderBook{
         return bids.isEmpty() && offers.isEmpty() && placements.isEmpty();
     }
 
-    @Override
     public long getTimestamp() {
         return timestamp;
     }
 
-    @Override
     public void place(Placement placement) {
         if (placements.containsKey(placement.getId()))
             return;
@@ -82,7 +90,6 @@ public class LimitOrderBook implements OrderBook{
         return level.place(placement);
     }
 
-    @Override
     public void cancel(Cancellation cancellation) {
         Placement placement = placements.get(cancellation.getId());
         if (placement == null)
@@ -117,7 +124,6 @@ public class LimitOrderBook implements OrderBook{
         return levels.get(levels.firstLongKey());
     }
 
-    @Override
     public String toString() {
         return new ToStringBuilder(this)
                 .append("timestamp", timestamp)
