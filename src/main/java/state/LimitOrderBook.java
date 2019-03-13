@@ -111,17 +111,32 @@ public class LimitOrderBook {
             offers.remove(limit.getPrice());
     }
 
-    private Limit getBestLimit(Long2ObjectRBTreeMap<Limit> levels) {
+    private Limit getBestLimit(Long2ObjectRBTreeMap<Limit> levels){
         if (levels.isEmpty())
             return null;
         return levels.get(levels.firstLongKey());
     }
 
-    public String toString() {
+    @Override
+    public String toString(){
         return new ToStringBuilder(this)
                 .append("bids", bids)
                 .append("offers", offers)
                 .append("placements", placements)
                 .toString();
+    }
+
+    public String info(){
+        StringBuilder builder = new StringBuilder();
+        builder.append("| Timestamp: " + System.nanoTime());
+        long bidLimits = bids.values().stream().count();
+        long offerLimits = bids.values().stream().count();
+        long bidPlacements = bids.values().stream().map(Limit::getPlacementCount).reduce(0, (a, b) -> a + b);
+        long offerPlacements = offers.values().stream().map(Limit::getPlacementCount).reduce(0, (a, b) -> a + b);
+        long bidVolume = bids.values().stream().map(Limit::getVolume).reduce(0L, (a, b) -> a + b);
+        long offerVolume = offers.values().stream().map(Limit::getVolume).reduce(0L, (a, b) -> a + b);
+        builder.append(" | Bid Placments: " + bidPlacements + " | Bid Volume: " + bidVolume + " | Bid Limits: " + bidLimits +
+                       " | Offer Placements: " + offerPlacements + " | Offer Volume: " + offerVolume + " | Offer Limits: " + offerLimits);
+        return builder.toString();
     }
 }
