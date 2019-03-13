@@ -45,36 +45,4 @@ public class LimitTest extends TestCase {
         assertTrue(limit.isEmpty());
     }
 
-    public void testLimitPartialMatch() {
-        Limit limit = new Limit(Side.BID, 100L);
-        Limit limit1 = new Limit(Side.OFFER, 100L);
-        Placement placement = new Placement(limit, 10L);
-        Placement placement1 = new Placement(limit1, 5L);
-        limit.place(placement); limit1.place(placement1);
-        limit.match(placement1.getSize());
-        assertEquals(5L, placement.getSize());
-        assertEquals(5L, limit.getVolume());
-    }
-
-    public void testLimitFullMatch(){
-        Limit limit = new Limit(Side.BID, 100L);
-        Limit limit1 = new Limit(Side.OFFER, 100L);
-        Placement placement = new Placement(limit, 10L);
-        Placement placement1 = new Placement(limit1, 10L);
-        limit.place(placement); limit1.place(placement1);
-        limit.match(placement1.getSize());
-        assertEquals(0L, limit.getVolume());
-    }
-
-    public void testLimitOverMatch(){
-        Limit limit = new Limit(Side.BID, 100L);
-        Limit limit1 = new Limit(Side.OFFER, 100L);
-        Placement placement = new Placement(limit, 10L);
-        Placement placement1 = new Placement(limit1, 20L);
-        limit.place(placement); limit1.place(placement1);
-        long remainder = limit.match(placement1.getSize());
-        assertEquals(0L, limit.getVolume());
-        assertEquals(10L, remainder);
-    }
-
 }
