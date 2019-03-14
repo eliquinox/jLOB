@@ -9,7 +9,9 @@ import state.Limit;
 import state.LimitOrderBook;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
@@ -20,7 +22,7 @@ public class StreamsTest {
     private static final Random RND = new Random();
     private static int[] nPlacementPicker = {4, 8, 16, 32, 64}; // Mesh to pick n of placements per limit from;
     private static int[] vPlacementPicker = {128, 256, 512, 1024, 2048}; // Mesh to pick volume of placements from;
-
+    private static final LimitOrderBook BOOK = getRandomizedOrderBook(50, 10, 1000);
 
     static LimitOrderBook getRandomizedOrderBook(int limitsPerSide, int tickSize, long mid){
         Preconditions.checkState(mid - limitsPerSide * tickSize >= 0, "Cannot have negative prices");
@@ -55,7 +57,7 @@ public class StreamsTest {
                 .mapToObj(price -> {
                     long p = price * tickSize;
                     int amount = vPlacementPicker[RND.nextInt(vPlacementPicker.length)];
-                    if(Math.random() >= 1 - probMkt){
+                    if(Math.random() <= 1 - probMkt){
                         if(p < midTick){
                             Limit limit = new Limit(Side.BID, p);
                             return new Placement(limit, amount);
@@ -63,8 +65,10 @@ public class StreamsTest {
                             Limit limit = new Limit(Side.OFFER, p);
                             return new Placement(limit, amount);
                         }
-                    } else {
+                    }
+                    else {
                         if(p < midTick){
+                            System.out.println("In mkt placement");
                             Limit limit = new Limit(Side.OFFER, midTick - tickSize);
                             return new Placement(limit, amount);
                         } else {
@@ -77,16 +81,15 @@ public class StreamsTest {
 
     public static void main(String[] args){
         LimitOrderBook book = getRandomizedOrderBook(50, 10, 1000);
-        placementStream(50, 10, 1000, 0.0).limit(1000)
+        placementStream(50, 10, 1000, 0.15).limit(1000)
                 .forEach(p -> {
                     book.place(p);
-                    System.out.println(book.info());
+                    System.out.println(book.bestBidOffer());
                     try {
                         Thread.sleep(100);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
                 });
-
     }
 }

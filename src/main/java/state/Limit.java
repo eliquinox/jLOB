@@ -39,6 +39,7 @@ public class Limit {
 
     public long match(long tradeSize, Long2ObjectOpenHashMap<Placement> placementIds){
         while (tradeSize > 0 && !placements.isEmpty()) {
+            System.out.println("In Limit match");
             Placement placement = placements.get(0);
             long restingPlacementId = placement.getId();
             long orderSize = placement.getSize();
@@ -55,9 +56,7 @@ public class Limit {
     }
 
     public long getVolume(){
-        return placements.stream()
-                .map(Placement::getSize)
-                .reduce(0L, (a,b) -> a + b);
+        return placements.stream().map(Placement::getSize).reduce(0L, (a,b) -> a + b);
     }
 
     public int getPlacementCount(){

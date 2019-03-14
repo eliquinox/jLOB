@@ -14,8 +14,7 @@ public class LimitOrderBook {
     private Long2ObjectRBTreeMap<Limit> offers;
     private Long2ObjectOpenHashMap<Placement> placements;
 
-    public LimitOrderBook(long timestamp,
-                          Long2ObjectRBTreeMap<Limit> bids,
+    public LimitOrderBook(Long2ObjectRBTreeMap<Limit> bids,
                           Long2ObjectRBTreeMap<Limit> offers,
                           Long2ObjectOpenHashMap<Placement> placements){
         this.bids = bids;
@@ -47,6 +46,7 @@ public class LimitOrderBook {
     }
 
     private void bid(Placement placement){
+        System.out.println("In Bid: " + placement);
         long remainingQuantity = placement.getSize();
         Limit limit  = getBestLimit(offers);
         while (remainingQuantity > 0 && limit != null && limit.getPrice() <= placement.getPrice()) {
@@ -61,6 +61,7 @@ public class LimitOrderBook {
     }
 
     private void offer(Placement placement){
+        System.out.println("In Offer: " + placement);
         long remainingQuantity = placement.getSize();
         Limit limit = getBestLimit(bids);
         while (remainingQuantity > 0 && limit != null && limit.getPrice() >= placement.getPrice()) {
@@ -137,6 +138,18 @@ public class LimitOrderBook {
         long offerVolume = offers.values().stream().map(Limit::getVolume).reduce(0L, (a, b) -> a + b);
         builder.append(" | Bid Placments: " + bidPlacements + " | Bid Volume: " + bidVolume + " | Bid Limits: " + bidLimits +
                        " | Offer Placements: " + offerPlacements + " | Offer Volume: " + offerVolume + " | Offer Limits: " + offerLimits);
+        return builder.toString();
+    }
+
+    public String bestBidOffer(){
+        StringBuilder builder = new StringBuilder();
+        builder.append("| Timestamp: " + System.nanoTime());
+        builder.append(
+                "| Best Bid Price: " + bids.firstLongKey() +
+                "| Best Bid Volume: " + bids.get(bids.firstLongKey()).getVolume() +
+                "| Best Offer Price: " + offers.firstLongKey() +
+                "| Best Offer Volume: " + offers.get(offers.firstLongKey()).getVolume()
+        );
         return builder.toString();
     }
 }
