@@ -118,6 +118,10 @@ public class LimitOrderBook {
         return levels.get(levels.firstLongKey());
     }
 
+    public long getMidPrice(){
+        return (bids.firstLongKey() + offers.firstLongKey()) / 2;
+    }
+
     @Override
     public String toString(){
         return new ToStringBuilder(this)

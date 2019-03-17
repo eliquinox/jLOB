@@ -65,8 +65,7 @@ public class StreamsTest {
                             Limit limit = new Limit(Side.OFFER, p);
                             return new Placement(limit, amount);
                         }
-                    }
-                    else {
+                    } else {
                         if(p < midTick){
                             System.out.println("In mkt placement");
                             Limit limit = new Limit(Side.OFFER, midTick - tickSize);
@@ -80,16 +79,17 @@ public class StreamsTest {
     }
 
     public static void main(String[] args){
-        LimitOrderBook book = getRandomizedOrderBook(50, 10, 1000);
         placementStream(50, 10, 1000, 0.15).limit(1000)
                 .forEach(p -> {
-                    book.place(p);
-                    System.out.println(book.bestBidOffer());
+                    BOOK.place(p);
+                    System.out.println(BOOK.bestBidOffer());
                     try {
                         Thread.sleep(100);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
+                    System.out.println(BOOK.info());
+                    System.out.println();
                 });
     }
 }
