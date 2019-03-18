@@ -46,13 +46,12 @@ public class LimitOrderBook {
     }
 
     private void bid(Placement placement){
-        System.out.println("In Bid: " + placement);
         long remainingQuantity = placement.getSize();
         Limit limit  = getBestLimit(offers);
         while (remainingQuantity > 0 && limit != null && limit.getPrice() <= placement.getPrice()) {
             remainingQuantity = limit.match(placement.getSize(), placements);
             if (limit.isEmpty())
-                limit.remove(placement);
+                offers.remove(limit.getPrice());
             limit = getBestLimit(offers);
         }
         if (remainingQuantity > 0) {
@@ -61,7 +60,6 @@ public class LimitOrderBook {
     }
 
     private void offer(Placement placement){
-        System.out.println("In Offer: " + placement);
         long remainingQuantity = placement.getSize();
         Limit limit = getBestLimit(bids);
         while (remainingQuantity > 0 && limit != null && limit.getPrice() >= placement.getPrice()) {
@@ -134,8 +132,8 @@ public class LimitOrderBook {
     public String info(){
         StringBuilder builder = new StringBuilder();
         builder.append("| Timestamp: " + System.nanoTime());
-        long bidLimits = bids.values().stream().count();
-        long offerLimits = bids.values().stream().count();
+        long bidLimits = bids.values().size();
+        long offerLimits = bids.values().size();
         long bidPlacements = bids.values().stream().map(Limit::getPlacementCount).reduce(0, (a, b) -> a + b);
         long offerPlacements = offers.values().stream().map(Limit::getPlacementCount).reduce(0, (a, b) -> a + b);
         long bidVolume = bids.values().stream().map(Limit::getVolume).reduce(0L, (a, b) -> a + b);

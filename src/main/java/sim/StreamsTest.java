@@ -1,18 +1,12 @@
-package stream;
+package sim;
 
 import com.google.common.base.Preconditions;
 import delta.Placement;
 import delta.Side;
-import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.longs.Long2ObjectRBTreeMap;
 import state.Limit;
 import state.LimitOrderBook;
 
-import java.util.List;
-import java.util.Map;
 import java.util.Random;
-import java.util.TreeMap;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
@@ -51,7 +45,6 @@ public class StreamsTest {
     }
 
     static Stream<Placement> placementStream(int limitsPerSide, int tickSize, long mid, double probMkt){
-        //TODO: Debug staleness when matching
         long midTick = mid * tickSize;
         return RND.longs(mid - limitsPerSide, mid + limitsPerSide)
                 .mapToObj(price -> {
@@ -66,8 +59,8 @@ public class StreamsTest {
                             return new Placement(limit, amount);
                         }
                     } else {
+                        //Issue market order
                         if(p < midTick){
-                            System.out.println("In mkt placement");
                             Limit limit = new Limit(Side.OFFER, midTick - tickSize);
                             return new Placement(limit, amount);
                         } else {
@@ -79,17 +72,15 @@ public class StreamsTest {
     }
 
     public static void main(String[] args){
-        placementStream(50, 10, 1000, 0.15).limit(1000)
+        placementStream(50, 10, 1000, 0.35)
                 .forEach(p -> {
                     BOOK.place(p);
-                    System.out.println(BOOK.bestBidOffer());
+                    System.out.println(BOOK.info());
                     try {
-                        Thread.sleep(100);
+                        Thread.sleep(1);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-                    System.out.println(BOOK.info());
-                    System.out.println();
                 });
     }
 }
