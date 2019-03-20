@@ -1,6 +1,7 @@
 package sim;
 
 import com.google.common.base.Preconditions;
+import delta.Cancellation;
 import delta.Placement;
 import delta.Side;
 import state.Limit;
@@ -67,6 +68,20 @@ public class StreamsTest {
                             Limit limit = new Limit(Side.BID, midTick + tickSize);
                             return new Placement(limit, amount);
                         }
+                    }
+                });
+    }
+
+    static Stream<Cancellation> cancellationStream(int limitsPerSide, int tickSize, long mid, double probCncl){
+        long midTick = mid * tickSize;
+        return RND.longs(mid - limitsPerSide, mid + limitsPerSide)
+                .mapToObj(price -> {
+                   long p = price * tickSize;
+                    int amount = vPlacementPicker[RND.nextInt(vPlacementPicker.length)];
+                    if(Math.random() <= 1 - probCncl) {
+                        return null;
+                    } else {
+                        return null;
                     }
                 });
     }

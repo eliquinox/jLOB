@@ -120,6 +120,14 @@ public class LimitOrderBook {
         return (bids.firstLongKey() + offers.firstLongKey()) / 2;
     }
 
+    public long getBestBid(){
+        return bids.firstLongKey();
+    }
+
+    public long getBestOffer(){
+        return offers.firstLongKey();
+    }
+
     @Override
     public String toString(){
         return new ToStringBuilder(this)
