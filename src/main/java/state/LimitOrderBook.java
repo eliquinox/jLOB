@@ -49,7 +49,7 @@ public class LimitOrderBook {
         long remainingQuantity = placement.getSize();
         Limit limit  = getBestLimit(offers);
         while (remainingQuantity > 0 && limit != null && limit.getPrice() <= placement.getPrice()) {
-            remainingQuantity = limit.match(placement.getSize(), placements);
+            remainingQuantity = limit.match(placement, placements);
             if (limit.isEmpty())
                 offers.remove(limit.getPrice());
             limit = getBestLimit(offers);
@@ -63,7 +63,7 @@ public class LimitOrderBook {
         long remainingQuantity = placement.getSize();
         Limit limit = getBestLimit(bids);
         while (remainingQuantity > 0 && limit != null && limit.getPrice() >= placement.getPrice()) {
-            remainingQuantity = limit.match(placement.getSize(), placements);
+            remainingQuantity = limit.match(placement, placements);
             if (limit.isEmpty())
                 bids.remove(limit.getPrice());
             limit = getBestLimit(bids);
@@ -126,6 +126,38 @@ public class LimitOrderBook {
 
     public long getBestOffer(){
         return offers.firstLongKey();
+    }
+
+    public long getBestBidAmount(){
+        return bids.get(bids.firstLongKey()).getVolume();
+    }
+
+    public long getBestOfferAmount(){
+        return offers.get(offers.firstLongKey()).getVolume();
+    }
+
+    private double getAveragePrice(long size, Long2ObjectRBTreeMap<Limit> levels) {
+        long psizesum = 0L, sizesum = 0L;
+        int i = 0, c = levels.size();
+        for(Limit limit : levels.values()){
+            long unfilled_size = size - sizesum;
+            long price = limit.getPrice();
+            long volume = limit.getVolume();
+            long s = Math.min(unfilled_size, volume);
+            sizesum += s;
+            psizesum += s * price;
+            if(sizesum >= size)
+                return sizesum == 0. ? 0. : psizesum / size;
+        }
+        return sizesum < size ? Double.NaN : 0.;
+    }
+
+    public double getAverageSalePrice(long size){
+        return getAveragePrice(size, bids);
+    }
+
+    public double getAveragePurchasePrice(long size){
+        return getAveragePrice(size, offers);
     }
 
     @Override

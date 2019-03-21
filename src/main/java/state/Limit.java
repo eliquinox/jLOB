@@ -8,11 +8,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Limit {
-
     private final Side side;
+
     private final long price;
     private List<Placement> placements;
-
     public Limit(Side side, long price) {
         this.side = side;
         this.price = price;
@@ -37,21 +36,21 @@ public class Limit {
         return placement;
     }
 
-    public long match(long tradeSize, Long2ObjectOpenHashMap<Placement> placementIds){
-        while (tradeSize > 0 && !placements.isEmpty()) {
-            Placement placement = placements.get(0);
-            long restingPlacementId = placement.getId();
-            long orderSize = placement.getSize();
-            if (orderSize > tradeSize) {
-                placement.reduce(tradeSize);
-                tradeSize = 0;
+    public long match(Placement incomingPlacement, Long2ObjectOpenHashMap<Placement> placementIds){
+        while (incomingPlacement.getSize() > 0 && !placements.isEmpty()) {
+            Placement restingPlacement = placements.get(0);
+            long restingPlacementId = restingPlacement.getId();
+            long orderSize = restingPlacement.getSize();
+            if (orderSize > incomingPlacement.getSize()) {
+                restingPlacement.reduce(incomingPlacement.getSize());
+                incomingPlacement.reduce(incomingPlacement.getSize());
             } else {
                 placements.remove(0);
-                tradeSize -= orderSize;
+                incomingPlacement.reduce(orderSize);
                 placementIds.remove(restingPlacementId);
             }
         }
-        return tradeSize;
+        return incomingPlacement.getSize();
     }
 
     public long getVolume(){
@@ -64,6 +63,15 @@ public class Limit {
 
     public boolean isEmpty(){
         return placements.isEmpty();
+    }
+
+    @Override
+    public String toString() {
+        return "Limit{" +
+                "side=" + side +
+                ", price=" + price +
+                ", placements=" + placements +
+                '}';
     }
 
 }
