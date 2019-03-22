@@ -1,6 +1,5 @@
 package state;
 
-import com.google.common.collect.Ordering;
 import delta.Placement;
 import delta.Side;
 import junit.framework.TestCase;
@@ -106,13 +105,13 @@ public class LimitOrderBookTest extends TestCase {
     }
 
     @Test
-    public void testAveragePurchaseUsual() {
+    public void testAveragePurchaseTop() {
         assertEquals(1100.0, book.getAveragePurchasePrice(25));
     }
 
     @Test
     public void testAveragePurchaseMultipleLevels(){
-        long result = (1100 * 125 + 1200 * 25) / 150;
+        double result = (1100 * 125 + 1200 * 25) / 150;
         assertEquals(result, book.getAveragePurchasePrice(150));
     }
 
@@ -124,6 +123,27 @@ public class LimitOrderBookTest extends TestCase {
     @Test
     public void testAveragePurchaseZero(){
         assertEquals(0., book.getAveragePurchasePrice(0));
+    }
+
+    @Test
+    public void testAverageSaleTop(){
+        assertEquals(1000., book.getAverageSalePrice(50));
+    }
+
+    @Test
+    public void testAverageSaleMultipleLevels(){
+        double result = (1000 * 100 + 900 * 75) / 175;
+        assertEquals(result, book.getAverageSalePrice(175));
+    }
+
+    @Test
+    public void testAverageSalePurchaseOverflow(){
+        assertEquals(Double.NaN, book.getAverageSalePrice(1000));
+    }
+
+    @Test
+    public void testAverageSaleZero(){
+        assertEquals(0., book.getAverageSalePrice(0));
     }
 
 }
