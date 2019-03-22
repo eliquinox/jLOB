@@ -90,7 +90,7 @@ public class StreamsTest {
         placementStream(50, 10, 1000, 0.35)
                 .forEach(p -> {
                     BOOK.place(p);
-                    System.out.println(BOOK.info());
+                    System.out.println(BOOK.bestBidOffer());
                     try {
                         Thread.sleep(1);
                     } catch (InterruptedException e) {

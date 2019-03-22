@@ -8,6 +8,16 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectRBTreeMap;
 import it.unimi.dsi.fastutil.longs.LongComparators;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+/**
+ * L3 Limit Order Book implementation.
+ *
+ * Bids and offers are kept sorted in reverse natural and natural orders respectively
+ * by the virtue of {@code Long2ObjectRBTreeMap<Limit>}s
+ *
+ * {@code Limit}s represent price levels in an order book and wrap around a collection of {@code Placement}s.
+ *
+ */
+
 public class LimitOrderBook {
 
     private Long2ObjectRBTreeMap<Limit> bids;

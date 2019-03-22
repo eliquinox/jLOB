@@ -7,7 +7,6 @@ import junit.framework.TestCase;
 
 public class LimitTest extends TestCase {
 
-    //TODO: Check for correct limit / side price arguments on construction
 
     @Override
     protected void tearDown() throws Exception {
