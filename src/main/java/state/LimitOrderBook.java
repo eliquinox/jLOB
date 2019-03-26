@@ -148,7 +148,6 @@ public class LimitOrderBook {
 
     private double getAveragePrice(long size, Long2ObjectRBTreeMap<Limit> levels) {
         long psizesum = 0L, sizesum = 0L;
-        int i = 0, c = levels.size();
         for(Limit limit : levels.values()){
             long unfilled_size = size - sizesum;
             long price = limit.getPrice();
