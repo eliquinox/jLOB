@@ -20,7 +20,7 @@ public class DeltaTest extends TestCase{
 
     public void testCancellationCreation(){
         Placement placement = new Placement(Side.BID, 100,10L);
-        Cancellation cancellation = new Cancellation(placement,5);
+        Cancellation cancellation = new Cancellation(placement.getId(),5);
         assertEquals(100L, placement.getPrice());
         assertEquals(10L, placement.getSize());
         assertEquals(5L, cancellation.getSize());

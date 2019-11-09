@@ -3,43 +3,26 @@ package delta;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import state.Limit;
 
-public class Cancellation implements Delta {
+public class Cancellation {
 
     private long id;
     private final long timestamp;
-    private final Side side;
-    private final long price;
     private final long size;
 
-    public Cancellation(Placement placement, long cancellationSize) {
+    public Cancellation(long placementId, long cancellationSize) {
         this.timestamp = System.nanoTime();
-        this.id = placement.getId();
-        this.side = placement.getSide();
-        this.price = placement.getPrice();
+        this.id = placementId;
         this.size = cancellationSize;
     }
 
-    @Override
     public long getId() {
         return id;
     }
 
-    @Override
     public long getSize() {
         return size;
     }
 
-    @Override
-    public long getPrice(){
-        return price;
-    }
-
-    @Override
-    public Side getSide() {
-        return side;
-    }
-
-    @Override
     public long getTimestamp() {
         return timestamp;
     }

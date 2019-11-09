@@ -98,13 +98,13 @@ public class LimitOrderBook {
         Placement placement = placements.get(cancellation.getId());
         if (placement == null)
             return;
-        if (cancellation.getSize() >= placement.getSize())
+        if (cancellation.getSize() > placement.getSize())
             return;
-        if (cancellation.getSize() > 0) {
-            placement.reduce(cancellation.getSize());
-        } else {
+        if (cancellation.getSize() == placement.getSize()) {
             remove(placement);
             placements.remove(placement.getId());
+        } else {
+            placement.reduce(cancellation.getSize());
         }
     }
 
@@ -184,7 +184,6 @@ public class LimitOrderBook {
         return new ToStringBuilder(this)
                 .append("bids", bids)
                 .append("offers", offers)
-                .append("placements", placements)
                 .toString();
     }
 
