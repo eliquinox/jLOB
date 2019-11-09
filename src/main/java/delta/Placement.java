@@ -2,7 +2,7 @@ package delta;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-public class Placement implements Delta {
+public class Placement implements GID {
 
     private final long id = GLOBAL_ID.incrementAndGet();
     private final long timestamp;

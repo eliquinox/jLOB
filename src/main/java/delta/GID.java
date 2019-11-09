@@ -2,6 +2,6 @@ package delta;
 
 import java.util.concurrent.atomic.AtomicLong;
 
-public interface Delta {
+public interface GID {
     AtomicLong GLOBAL_ID = new AtomicLong();
 }

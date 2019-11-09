@@ -3,7 +3,7 @@ package delta;
 import junit.framework.TestCase;
 import state.Limit;
 
-public class DeltaTest extends TestCase{
+public class PlacementTest extends TestCase{
 
     @Override
     protected void tearDown() throws Exception {
