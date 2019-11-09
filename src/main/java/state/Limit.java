@@ -54,7 +54,7 @@ public class Limit {
     }
 
     public long getVolume(){
-        return placements.stream().map(Placement::getSize).reduce(0L, (a,b) -> a + b);
+        return placements.stream().map(Placement::getSize).reduce(0L, Long::sum);
     }
 
     public int getPlacementCount(){

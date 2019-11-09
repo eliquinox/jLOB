@@ -24,9 +24,11 @@ public class LimitOrderBook {
     private Long2ObjectRBTreeMap<Limit> offers;
     private Long2ObjectOpenHashMap<Placement> placements;
 
-    public LimitOrderBook(Long2ObjectRBTreeMap<Limit> bids,
-                          Long2ObjectRBTreeMap<Limit> offers,
-                          Long2ObjectOpenHashMap<Placement> placements){
+    public LimitOrderBook(
+        Long2ObjectRBTreeMap<Limit> bids,
+        Long2ObjectRBTreeMap<Limit> offers,
+        Long2ObjectOpenHashMap<Placement> placements
+    ) {
         this.bids = bids;
         this.offers = offers;
         this.placements = placements;
@@ -55,7 +57,7 @@ public class LimitOrderBook {
             offer(placement);
     }
 
-    private void bid(Placement placement){
+    private void bid(Placement placement) {
         long remainingQuantity = placement.getSize();
         Limit limit  = getBestLimit(offers);
         while (remainingQuantity > 0 && limit != null && limit.getPrice() <= placement.getPrice()) {
@@ -69,7 +71,7 @@ public class LimitOrderBook {
         }
     }
 
-    private void offer(Placement placement){
+    private void offer(Placement placement) {
         long remainingQuantity = placement.getSize();
         Limit limit = getBestLimit(bids);
         while (remainingQuantity > 0 && limit != null && limit.getPrice() >= placement.getPrice()) {
@@ -106,21 +108,21 @@ public class LimitOrderBook {
         }
     }
 
-    private void remove(Placement placement){
+    private void remove(Placement placement) {
         Limit limit = placement.getLimit();
         limit.remove(placement);
         if (limit.isEmpty())
             remove(limit);
     }
 
-    private void remove(Limit limit){
+    private void remove(Limit limit) {
         if (limit.getSide() == Side.BID)
             bids.remove(limit.getPrice());
         else
             offers.remove(limit.getPrice());
     }
 
-    private Limit getBestLimit(Long2ObjectRBTreeMap<Limit> levels){
+    private Limit getBestLimit(Long2ObjectRBTreeMap<Limit> levels) {
         if (levels.isEmpty())
             return null;
         return levels.get(levels.firstLongKey());
@@ -170,7 +172,7 @@ public class LimitOrderBook {
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         return new ToStringBuilder(this)
                 .append("bids", bids)
                 .append("offers", offers)
@@ -178,21 +180,7 @@ public class LimitOrderBook {
                 .toString();
     }
 
-    public String info(){
-        StringBuilder builder = new StringBuilder();
-        builder.append("| Timestamp: " + System.nanoTime());
-        long bidLimits = bids.values().size();
-        long offerLimits = bids.values().size();
-        long bidPlacements = bids.values().stream().map(Limit::getPlacementCount).reduce(0, (a, b) -> a + b);
-        long offerPlacements = offers.values().stream().map(Limit::getPlacementCount).reduce(0, (a, b) -> a + b);
-        long bidVolume = bids.values().stream().map(Limit::getVolume).reduce(0L, (a, b) -> a + b);
-        long offerVolume = offers.values().stream().map(Limit::getVolume).reduce(0L, (a, b) -> a + b);
-        builder.append(" | Bid Placments: " + bidPlacements + " | Bid Volume: " + bidVolume + " | Bid Limits: " + bidLimits +
-                       " | Offer Placements: " + offerPlacements + " | Offer Volume: " + offerVolume + " | Offer Limits: " + offerLimits);
-        return builder.toString();
-    }
-
-    public String bestBidOffer(){
+    public String bestBidOffer() {
         StringBuilder builder = new StringBuilder();
         builder.append("| Timestamp: " + System.nanoTime());
         builder.append(
