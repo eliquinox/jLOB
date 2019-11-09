@@ -21,12 +21,13 @@ public class LimitOrderBookService {
 
     private static void registerTypeAdapters() {
         gsonBuilder.registerTypeAdapter(Placement.class, new PlacementDeserializer());
+        gsonBuilder.registerTypeAdapter(Cancellation.class, new CancellationDeserializer());
     }
 
     private static void registerEndpoints() {
         Gson gson = gsonBuilder.create();
 
-        get("book", ((request, response) -> gson.toJson(LIMIT_ORDER_BOOK)));
+        get("book", ((request, response) -> LIMIT_ORDER_BOOK), gson::toJson);
 
         post("book", ((request, response) -> {
             Placement placement = gson.fromJson(request.body(), Placement.class);
