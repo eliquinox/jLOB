@@ -5,14 +5,16 @@ import state.Limit;
 
 public class Placement implements Delta {
 
-    private long id = GLOBAL_ID.incrementAndGet();
+    private final long id = GLOBAL_ID.incrementAndGet();
     private final long timestamp;
-    private Limit limit;
+    private final Side side;
+    private final long price;
     private long size;
 
-    public Placement(Limit limit, long size){
+    public Placement(Side side, long price, long size){
         this.timestamp = System.nanoTime();
-        this.limit = limit;
+        this.side = side;
+        this.price = price;
         this.size = size;
     }
 
@@ -22,23 +24,18 @@ public class Placement implements Delta {
     }
 
     @Override
-    public Limit getLimit() {
-        return limit;
-    }
-
-    @Override
     public long getSize() {
         return size;
     }
 
     @Override
     public long getPrice(){
-        return limit.getPrice();
+        return price;
     }
 
     @Override
     public Side getSide() {
-        return limit.getSide();
+        return side;
     }
 
     @Override

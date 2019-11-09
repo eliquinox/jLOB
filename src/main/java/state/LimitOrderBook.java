@@ -109,7 +109,15 @@ public class LimitOrderBook {
     }
 
     private void remove(Placement placement) {
-        Limit limit = placement.getLimit();
+        Side side = placement.getSide();
+        long price = placement.getPrice();
+        Limit limit;
+
+        if (side == Side.BID)
+            limit = bids.get(price);
+        else
+            limit = offers.get(price);
+
         limit.remove(placement);
         if (limit.isEmpty())
             remove(limit);

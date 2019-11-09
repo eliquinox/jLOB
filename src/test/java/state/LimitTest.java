@@ -24,9 +24,9 @@ public class LimitTest extends TestCase {
 
     public void testLimitPlace() {
         Limit limit = new Limit(Side.BID, 100L);
-        Placement placement = new Placement(limit, 10L);
-        Placement placement1 = new Placement(limit, 10L);
-        Placement placement2 = new Placement(limit, 10L);
+        Placement placement = new Placement(limit.getSide(), limit.getPrice(), 10L);
+        Placement placement1 = new Placement(limit.getSide(), limit.getPrice(), 10L);
+        Placement placement2 = new Placement(limit.getSide(), limit.getPrice(), 10L);
         assertEquals(placement.getSide(), limit.getSide());
         assertEquals(placement.getPrice(), limit.getPrice());
         limit.place(placement);limit.place(placement1);limit.place(placement2);
@@ -36,9 +36,9 @@ public class LimitTest extends TestCase {
 
     public void testLimitRemove() {
         Limit limit = new Limit(Side.BID, 100L);
-        Placement placement = new Placement(limit, 10L);
-        Placement placement1 = new Placement(limit, 10L);
-        Placement placement2 = new Placement(limit, 10L);
+        Placement placement = new Placement(limit.getSide(), limit.getPrice(), 10L);
+        Placement placement1 = new Placement(limit.getSide(), limit.getPrice(), 10L);
+        Placement placement2 = new Placement(limit.getSide(), limit.getPrice(), 10L);
         limit.place(placement);limit.place(placement1);limit.place(placement2);
         limit.remove(placement);limit.remove(placement1);limit.remove(placement2);
         assertTrue(limit.isEmpty());

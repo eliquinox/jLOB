@@ -12,16 +12,14 @@ public class DeltaTest extends TestCase{
     }
 
     public void testPlacementCreation(){
-        Limit limit = new Limit(Side.BID, 100);
-        Placement placement = new Placement(limit,10L);
+        Placement placement = new Placement(Side.BID, 100,10L);
         assertEquals(100L, placement.getPrice());
         assertEquals(10L, placement.getSize());
         assertEquals(Side.BID, placement.getSide());
     }
 
     public void testCancellationCreation(){
-        Limit limit = new Limit(Side.BID, 100);
-        Placement placement = new Placement(limit,10L);
+        Placement placement = new Placement(Side.BID, 100,10L);
         Cancellation cancellation = new Cancellation(placement,5);
         assertEquals(100L, placement.getPrice());
         assertEquals(10L, placement.getSize());
@@ -29,15 +27,13 @@ public class DeltaTest extends TestCase{
     }
 
     public void testPartialReduce(){
-        Limit limit = new Limit(Side.BID, 100);
-        Placement placement = new Placement(limit,10L);
+        Placement placement = new Placement(Side.BID, 100,10L);
         placement.reduce(5L);
         assertEquals(5L, placement.getSize());
     }
 
     public void testFullReduce(){
-        Limit limit = new Limit(Side.BID, 100);
-        Placement placement = new Placement(limit,10L);
+        Placement placement = new Placement(Side.BID, 100,10L);
         placement.reduce(10L);
         assertEquals(0L, placement.getSize());
     }

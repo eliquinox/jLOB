@@ -28,16 +28,14 @@ public class StreamsTest {
                     int nps = nPlacementPicker[RND.nextInt(nPlacementPicker.length)];
                     long p = price * tickSize;
                     if(p < midTick){
-                        Limit limit = new Limit(Side.BID, p);
                         IntStream.range(0, nps).forEach(i -> {
                             int amount = vPlacementPicker[RND.nextInt(vPlacementPicker.length)];
-                            Placement placement = new Placement(limit, amount);
+                            Placement placement = new Placement(Side.BID, p, amount);
                             limitOrderBook.place(placement);
                         });} else {
-                        Limit limit = new Limit(Side.OFFER, p);
                         IntStream.range(0, nps).forEach(i -> {
                             int amount = vPlacementPicker[RND.nextInt(vPlacementPicker.length)];
-                            Placement placement = new Placement(limit, amount);
+                            Placement placement = new Placement(Side.OFFER, p, amount);
                             limitOrderBook.place(placement);
                         });
                     }
@@ -53,20 +51,17 @@ public class StreamsTest {
                     int amount = vPlacementPicker[RND.nextInt(vPlacementPicker.length)];
                     if(Math.random() <= 1 - probMkt){
                         if(p < midTick){
-                            Limit limit = new Limit(Side.BID, p);
-                            return new Placement(limit, amount);
+                            return new Placement(Side.BID, p, amount);
                         } else {
                             Limit limit = new Limit(Side.OFFER, p);
-                            return new Placement(limit, amount);
+                            return new Placement(Side.OFFER, p, amount);
                         }
                     } else {
                         //Issue market order
                         if(p < midTick){
-                            Limit limit = new Limit(Side.OFFER, midTick - tickSize);
-                            return new Placement(limit, amount);
+                            return new Placement(Side.OFFER, midTick - tickSize, amount);
                         } else {
-                            Limit limit = new Limit(Side.BID, midTick + tickSize);
-                            return new Placement(limit, amount);
+                            return new Placement(Side.BID,  midTick + tickSize, amount);
                         }
                     }
                 });

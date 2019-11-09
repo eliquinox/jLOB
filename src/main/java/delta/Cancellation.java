@@ -7,13 +7,15 @@ public class Cancellation implements Delta {
 
     private long id;
     private final long timestamp;
-    private final Limit limit;
+    private final Side side;
+    private final long price;
     private final long size;
 
     public Cancellation(Placement placement, long cancellationSize) {
         this.timestamp = System.nanoTime();
         this.id = placement.getId();
-        this.limit = placement.getLimit();
+        this.side = placement.getSide();
+        this.price = placement.getPrice();
         this.size = cancellationSize;
     }
 
@@ -23,23 +25,18 @@ public class Cancellation implements Delta {
     }
 
     @Override
-    public Limit getLimit() {
-        return limit;
-    }
-
-    @Override
     public long getSize() {
         return size;
     }
 
     @Override
     public long getPrice(){
-        return limit.getPrice();
+        return price;
     }
 
     @Override
     public Side getSide() {
-        return limit.getSide();
+        return side;
     }
 
     @Override
@@ -52,7 +49,6 @@ public class Cancellation implements Delta {
         return new ToStringBuilder(this)
                 .append("id", id)
                 .append("timestamp", timestamp)
-                .append("limit", limit)
                 .append("size", size)
                 .toString();
     }

@@ -15,18 +15,18 @@ public class LimitOrderBookTest extends TestCase {
     protected void setUp() {
         book = LimitOrderBook.empty();
 
-        book.place(new Placement(new Limit(Side.OFFER, 1300), 245));
-        book.place(new Placement(new Limit(Side.OFFER, 1200), 25));
-        book.place(new Placement(new Limit(Side.OFFER, 1100), 125));
+        book.place(new Placement(Side.OFFER, 1300, 245));
+        book.place(new Placement(Side.OFFER, 1200, 25));
+        book.place(new Placement(Side.OFFER, 1100, 125));
 
-        book.place(new Placement(new Limit(Side.BID, 1000), 100));
-        book.place(new Placement(new Limit(Side.BID, 900), 75));
-        book.place(new Placement(new Limit(Side.BID, 800), 125));
+        book.place(new Placement(Side.BID, 1000, 100));
+        book.place(new Placement(Side.BID, 900, 75));
+        book.place(new Placement(Side.BID, 800, 125));
     }
 
     @Test
     public void testBuy(){
-        book.place(new Placement(new Limit(Side.BID, 1000), 100));
+        book.place(new Placement(Side.BID, 1000, 100));
         assertEquals(1000, book.getBestBid());
         assertEquals(1100, book.getBestOffer());
         assertEquals(200, book.getBestBidAmount());
@@ -36,7 +36,7 @@ public class LimitOrderBookTest extends TestCase {
 
     @Test
     public void testBuyCross(){
-        book.place(new Placement(new Limit(Side.BID, 1100), 100));
+        book.place(new Placement(Side.BID, 1100, 100));
         assertEquals(1000, book.getBestBid());
         assertEquals(1100, book.getBestOffer());
         assertEquals(100, book.getBestBidAmount());
@@ -46,7 +46,7 @@ public class LimitOrderBookTest extends TestCase {
 
     @Test
     public void testBestBuyFill(){
-        book.place(new Placement(new Limit(Side.BID, 1100), 125));
+        book.place(new Placement(Side.BID, 1100, 125));
         assertEquals(1000, book.getBestBid());
         assertEquals(1200, book.getBestOffer());
         assertEquals(25, book.getBestOfferAmount());
@@ -56,7 +56,7 @@ public class LimitOrderBookTest extends TestCase {
 
     @Test
     public void testBestBuyOverfill(){
-        book.place(new Placement(new Limit(Side.BID, 1100), 225));
+        book.place(new Placement(Side.BID, 1100, 225));
         assertEquals(1100, book.getBestBid());
         assertEquals(1200, book.getBestOffer());
         assertEquals(100, book.getBestBidAmount());
@@ -66,7 +66,7 @@ public class LimitOrderBookTest extends TestCase {
 
     @Test
     public void testSell(){
-        book.place(new Placement(new Limit(Side.OFFER, 1100), 100));
+        book.place(new Placement(Side.OFFER, 1100, 100));
         assertEquals(1000, book.getBestBid());
         assertEquals(1100, book.getBestOffer());
         assertEquals(100, book.getBestBidAmount());
@@ -76,7 +76,7 @@ public class LimitOrderBookTest extends TestCase {
 
     @Test
     public void testBestSellCross(){
-        book.place(new Placement(new Limit(Side.OFFER, 1000), 50));
+        book.place(new Placement(Side.OFFER, 1000, 50));
         assertEquals(1000, book.getBestBid());
         assertEquals(1100, book.getBestOffer());
         assertEquals(50, book.getBestBidAmount());
@@ -86,7 +86,7 @@ public class LimitOrderBookTest extends TestCase {
 
     @Test
     public void testBestSellFill(){
-        book.place(new Placement(new Limit(Side.OFFER, 1000), 100));
+        book.place(new Placement(Side.OFFER, 1000, 100));
         assertEquals(900, book.getBestBid());
         assertEquals(1100, book.getBestOffer());
         assertEquals(75, book.getBestBidAmount());
@@ -96,7 +96,7 @@ public class LimitOrderBookTest extends TestCase {
 
     @Test
     public void testBestSellOverFill(){
-        book.place(new Placement(new Limit(Side.OFFER, 1000), 400));
+        book.place(new Placement(Side.OFFER, 1000, 400));
         assertEquals(900, book.getBestBid());
         assertEquals(1000, book.getBestOffer());
         assertEquals(75, book.getBestBidAmount());
