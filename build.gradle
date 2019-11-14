@@ -19,11 +19,10 @@ repositories {
 
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
-    // https://mvnrepository.com/artifact/org.openjdk.jmh/jmh-generator-annprocess
     testCompile group: 'org.openjdk.jmh', name: 'jmh-generator-annprocess', version: '1.21'
 }
 
-group 'reactive-trading'
+group 'jLOB'
 version '1.0-SNAPSHOT'
 
 repositories {
