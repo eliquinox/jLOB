@@ -1,7 +1,7 @@
 package service;
 
 import com.google.gson.*;
-import delta.Cancellation;
+import dto.Cancellation;
 
 import java.lang.reflect.Type;
 

@@ -1,9 +1,9 @@
 package sim;
 
 import com.google.common.base.Preconditions;
-import delta.Cancellation;
-import delta.Placement;
-import delta.Side;
+import dto.Cancellation;
+import dto.Placement;
+import dto.Side;
 import state.Limit;
 import state.LimitOrderBook;
 

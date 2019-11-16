@@ -1,7 +1,6 @@
-package delta;
+package dto;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import state.Limit;
 
 public class Cancellation {
 

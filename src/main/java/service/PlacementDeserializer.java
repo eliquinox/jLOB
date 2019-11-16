@@ -1,7 +1,7 @@
 package service;
 
 import com.google.gson.*;
-import delta.Placement;
+import dto.Placement;
 
 import java.lang.reflect.Type;
 

@@ -1,7 +1,7 @@
 package state;
 
-import delta.Placement;
-import delta.Side;
+import dto.Placement;
+import dto.Side;
 import junit.framework.TestCase;
 
 

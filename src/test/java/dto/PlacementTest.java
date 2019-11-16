@@ -1,7 +1,6 @@
-package delta;
+package dto;
 
 import junit.framework.TestCase;
-import state.Limit;
 
 public class PlacementTest extends TestCase{
 

@@ -1,7 +1,7 @@
 package state;
 
-import delta.Placement;
-import delta.Side;
+import dto.Placement;
+import dto.Side;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 
 import java.util.ArrayList;

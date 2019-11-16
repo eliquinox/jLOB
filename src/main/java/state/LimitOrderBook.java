@@ -1,8 +1,8 @@
 package state;
 
-import delta.Cancellation;
-import delta.Placement;
-import delta.Side;
+import dto.Cancellation;
+import dto.Placement;
+import dto.Side;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectRBTreeMap;
 import it.unimi.dsi.fastutil.longs.LongComparators;
@@ -22,17 +22,7 @@ public class LimitOrderBook {
 
     private Long2ObjectRBTreeMap<Limit> bids;
     private Long2ObjectRBTreeMap<Limit> offers;
-    private Long2ObjectOpenHashMap<Placement> placements;
-
-    public LimitOrderBook(
-        Long2ObjectRBTreeMap<Limit> bids,
-        Long2ObjectRBTreeMap<Limit> offers,
-        Long2ObjectOpenHashMap<Placement> placements
-    ) {
-        this.bids = bids;
-        this.offers = offers;
-        this.placements = placements;
-    }
+    private transient Long2ObjectOpenHashMap<Placement> placements;
 
     private LimitOrderBook(){
         this.bids = new Long2ObjectRBTreeMap<>(LongComparators.OPPOSITE_COMPARATOR);
