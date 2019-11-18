@@ -1,10 +1,12 @@
 package service;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.google.gson.*;
 import dto.Cancellation;
 import dto.Placement;
+import dto.Side;
 import state.LimitOrderBook;
+
+import java.util.Map;
 
 import static spark.Spark.*;
 
@@ -40,6 +42,17 @@ public class LimitOrderBookService {
             LIMIT_ORDER_BOOK.cancel(cancellation);
             return gson.toJson(cancellation);
         }));
+
+        post("vwap", (request, response) -> {
+            JsonParser parser = new JsonParser();
+            JsonObject element = parser.parse(request.body()).getAsJsonObject();
+            String action = element.get("action").getAsString();
+            Side side = Side.fromString(action);
+            long size = element.get("size").getAsLong();
+            double price = side == Side.BID ? LIMIT_ORDER_BOOK.getAveragePurchasePrice(size) :
+                    LIMIT_ORDER_BOOK.getAverageSalePrice(size);
+            return gson.toJson(Map.of("price", price));
+        });
     }
 
 }
