@@ -8,9 +8,9 @@ To start the service:
 
 `gradle bookService`
 
-This will start the service on `http://localhost:4567`.
+This will start the orderbook service on `http://localhost:4567`.
 
-Import `jLOB.postman_collection.json` into Postman to start exploring the API.
+Import `jLOB.postman_collection.json` into [Postman](https://www.getpostman.com/) to start exploring the API.
 
 _jLOB_ supports the following endpoints:
 
