@@ -6,6 +6,7 @@ import dto.Placement;
 import dto.Side;
 import state.LimitOrderBook;
 
+import java.math.BigDecimal;
 import java.util.Map;
 
 import static spark.Spark.*;
@@ -49,7 +50,7 @@ public class LimitOrderBookService {
             String action = element.get("action").getAsString();
             Side side = Side.fromString(action);
             long size = element.get("size").getAsLong();
-            double price = side == Side.BID ? LIMIT_ORDER_BOOK.getAveragePurchasePrice(size) :
+            BigDecimal price = side == Side.BID ? LIMIT_ORDER_BOOK.getAveragePurchasePrice(size) :
                     LIMIT_ORDER_BOOK.getAverageSalePrice(size);
             return gson.toJson(Map.of("price", price));
         });

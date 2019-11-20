@@ -8,6 +8,9 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectRBTreeMap;
 import it.unimi.dsi.fastutil.longs.LongComparators;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+import java.math.BigDecimal;
+import static java.math.BigDecimal.valueOf;
+
 /**
  * L3 Limit Order Book implementation.
  *
@@ -146,9 +149,9 @@ public class LimitOrderBook {
         return offers.get(offers.firstLongKey()).getVolume();
     }
 
-    private double getAveragePrice(long size, Long2ObjectRBTreeMap<Limit> levels) {
+    private BigDecimal getAveragePrice(long size, Long2ObjectRBTreeMap<Limit> levels) {
         long psizesum = 0L, sizesum = 0L;
-        for(Limit limit : levels.values()){
+        for(Limit limit : levels.values()) {
             long unfilled_size = size - sizesum;
             long price = limit.getPrice();
             long volume = limit.getVolume();
@@ -156,16 +159,17 @@ public class LimitOrderBook {
             sizesum += s;
             psizesum += s * price;
             if(sizesum >= size)
-                return sizesum == 0. ? 0. : psizesum / size;
+                return valueOf(sizesum).equals(BigDecimal.ZERO) ? BigDecimal.ZERO :
+                        valueOf(psizesum).divide(valueOf(size));
         }
-        return sizesum < size ? Double.NaN : 0.;
+        return BigDecimal.ZERO;
     }
 
-    public double getAverageSalePrice(long size){
+    public BigDecimal getAverageSalePrice(long size){
         return getAveragePrice(size, bids);
     }
 
-    public double getAveragePurchasePrice(long size){
+    public BigDecimal getAveragePurchasePrice(long size){
         return getAveragePrice(size, offers);
     }
 
