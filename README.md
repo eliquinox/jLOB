@@ -6,7 +6,7 @@
 
 To start the service:
 
-`gradle bookService`
+`gradle bookApp`
 
 This will start the orderbook service on `http://localhost:4567`.
 

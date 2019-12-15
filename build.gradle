@@ -28,7 +28,7 @@ dependencies {
 }
 
 
-task bookService(type: JavaExec) {
+task bookApp(type: JavaExec) {
     classpath sourceSets.main.runtimeClasspath
-    main = "service.LimitOrderBookService"
+    main = "LimitOrderBookApplication"
 }

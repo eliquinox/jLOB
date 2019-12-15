@@ -1,9 +1,9 @@
-package service;
-
 import com.google.gson.*;
 import dto.Cancellation;
 import dto.Placement;
 import dto.Side;
+import service.CancellationDeserializer;
+import service.PlacementDeserializer;
 import state.LimitOrderBook;
 
 import java.math.BigDecimal;
@@ -12,7 +12,7 @@ import java.util.Map;
 import static spark.Spark.*;
 
 
-public class LimitOrderBookService {
+public class LimitOrderBookApplication {
 
     private static final LimitOrderBook LIMIT_ORDER_BOOK = LimitOrderBook.empty();
     private static final GsonBuilder gsonBuilder = new GsonBuilder();
