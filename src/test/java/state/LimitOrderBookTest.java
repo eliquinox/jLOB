@@ -1,17 +1,21 @@
 package state;
 
+import dto.Cancellation;
 import dto.Placement;
 import dto.Side;
-import junit.framework.TestCase;
-import org.junit.Before;
-import org.junit.Test;
+import exceptions.jLOBException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
-public class LimitOrderBookTest extends TestCase {
+public class LimitOrderBookTest {
 
     private LimitOrderBook book;
 
-    @Before
+    @BeforeEach
     protected void setUp() {
         book = LimitOrderBook.empty();
 
@@ -25,7 +29,7 @@ public class LimitOrderBookTest extends TestCase {
     }
 
     @Test
-    public void testBuy(){
+    public void testBuy() {
         book.place(new Placement(Side.BID, 1000, 100));
         assertEquals(1000, book.getBestBid());
         assertEquals(1100, book.getBestOffer());
@@ -35,7 +39,7 @@ public class LimitOrderBookTest extends TestCase {
     }
 
     @Test
-    public void testBuyCross(){
+    public void testBuyCross() {
         book.place(new Placement(Side.BID, 1100, 100));
         assertEquals(1000, book.getBestBid());
         assertEquals(1100, book.getBestOffer());
@@ -45,7 +49,7 @@ public class LimitOrderBookTest extends TestCase {
     }
 
     @Test
-    public void testBestBuyFill(){
+    public void testBestBuyFill() {
         book.place(new Placement(Side.BID, 1100, 125));
         assertEquals(1000, book.getBestBid());
         assertEquals(1200, book.getBestOffer());
@@ -55,7 +59,7 @@ public class LimitOrderBookTest extends TestCase {
     }
 
     @Test
-    public void testBestBuyOverfill(){
+    public void testBestBuyOverfill() {
         book.place(new Placement(Side.BID, 1100, 225));
         assertEquals(1100, book.getBestBid());
         assertEquals(1200, book.getBestOffer());
@@ -65,7 +69,7 @@ public class LimitOrderBookTest extends TestCase {
     }
 
     @Test
-    public void testSell(){
+    public void testSell() {
         book.place(new Placement(Side.OFFER, 1100, 100));
         assertEquals(1000, book.getBestBid());
         assertEquals(1100, book.getBestOffer());
@@ -75,7 +79,7 @@ public class LimitOrderBookTest extends TestCase {
     }
 
     @Test
-    public void testBestSellCross(){
+    public void testBestSellCross() {
         book.place(new Placement(Side.OFFER, 1000, 50));
         assertEquals(1000, book.getBestBid());
         assertEquals(1100, book.getBestOffer());
@@ -85,7 +89,7 @@ public class LimitOrderBookTest extends TestCase {
     }
 
     @Test
-    public void testBestSellFill(){
+    public void testBestSellFill() {
         book.place(new Placement(Side.OFFER, 1000, 100));
         assertEquals(900, book.getBestBid());
         assertEquals(1100, book.getBestOffer());
@@ -95,7 +99,7 @@ public class LimitOrderBookTest extends TestCase {
     }
 
     @Test
-    public void testBestSellOverFill(){
+    public void testBestSellOverFill() {
         book.place(new Placement(Side.OFFER, 1000, 400));
         assertEquals(900, book.getBestBid());
         assertEquals(1000, book.getBestOffer());
@@ -105,45 +109,57 @@ public class LimitOrderBookTest extends TestCase {
     }
 
     @Test
+    public void testCancellationAmountGreaterThanPlacement() {
+        Placement placement = new Placement(Side.BID, 100, 100);
+        Cancellation cancellation = new Cancellation(placement.getId(), 200);
+        book.place(placement);
+        assertThrows(
+                jLOBException.class,
+                () -> book.cancel(cancellation),
+                "Placement does not exist or cancellation size is inappropriate"
+        );
+    }
+
+    @Test
     public void testAveragePurchaseTop() {
-        assertEquals(1100.0, book.getAveragePurchasePrice(25));
+        assertEquals(1100.0, book.getAveragePurchasePrice(25).doubleValue());
     }
 
     @Test
     public void testAveragePurchaseMultipleLevels(){
-        double result = (1100 * 125 + 1200 * 25) / 150;
-        assertEquals(result, book.getAveragePurchasePrice(150));
+        double result = (1100. * 125. + 1200. * 25.) / 150.;
+        assertEquals(result, book.getAveragePurchasePrice(150).doubleValue(), 0.01);
     }
 
     @Test
     public void testAveragePurchaseOverflow(){
-        assertEquals(Double.NaN, book.getAveragePurchasePrice(1000));
+        assertEquals(0., book.getAveragePurchasePrice(1000).doubleValue());
     }
 
     @Test
     public void testAveragePurchaseZero(){
-        assertEquals(0., book.getAveragePurchasePrice(0));
+        assertEquals(0., book.getAveragePurchasePrice(0).doubleValue());
     }
 
     @Test
     public void testAverageSaleTop(){
-        assertEquals(1000., book.getAverageSalePrice(50));
+        assertEquals(1000., book.getAverageSalePrice(50).doubleValue());
     }
 
     @Test
     public void testAverageSaleMultipleLevels(){
-        double result = (1000 * 100 + 900 * 75) / 175;
-        assertEquals(result, book.getAverageSalePrice(175));
+        double result = (1000. * 100. + 900. * 75.) / 175.;
+        assertEquals(result, book.getAverageSalePrice(175).doubleValue(), 0.01);
     }
 
     @Test
     public void testAverageSalePurchaseOverflow(){
-        assertEquals(Double.NaN, book.getAverageSalePrice(1000));
+        assertEquals(0., book.getAverageSalePrice(1000).doubleValue());
     }
 
     @Test
     public void testAverageSaleZero(){
-        assertEquals(0., book.getAverageSalePrice(0));
+        assertEquals(0., book.getAverageSalePrice(0).doubleValue());
     }
 
 }

@@ -2,18 +2,15 @@ package state;
 
 import dto.Placement;
 import dto.Side;
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
-public class LimitTest extends TestCase {
+public class LimitTest {
 
-
-    @Override
-    protected void tearDown() throws Exception {
-        System.gc();
-        Thread.sleep(100);
-    }
-
+    @Test
     public void testLimitCreation() {
         Limit limit = new Limit(Side.BID, 100L);
         assertTrue(limit.isEmpty());
@@ -21,7 +18,7 @@ public class LimitTest extends TestCase {
         assertEquals(100L, limit.getPrice());
     }
 
-
+    @Test
     public void testLimitPlace() {
         Limit limit = new Limit(Side.BID, 100L);
         Placement placement = new Placement(limit.getSide(), limit.getPrice(), 10L);
@@ -34,6 +31,7 @@ public class LimitTest extends TestCase {
         assertEquals(30L, limit.getVolume());
     }
 
+    @Test
     public void testLimitRemove() {
         Limit limit = new Limit(Side.BID, 100L);
         Placement placement = new Placement(limit.getSide(), limit.getPrice(), 10L);

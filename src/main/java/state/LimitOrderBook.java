@@ -3,12 +3,15 @@ package state;
 import dto.Cancellation;
 import dto.Placement;
 import dto.Side;
+import exceptions.jLOBException;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectRBTreeMap;
 import it.unimi.dsi.fastutil.longs.LongComparators;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 import static java.math.BigDecimal.valueOf;
 
 /**
@@ -89,10 +92,8 @@ public class LimitOrderBook {
 
     public void cancel(Cancellation cancellation) {
         Placement placement = placements.get(cancellation.getId());
-        if (placement == null)
-            return;
-        if (cancellation.getSize() > placement.getSize())
-            return;
+        if (placement == null || cancellation.getSize() > placement.getSize())
+            throw new jLOBException("Placement does not exist or cancellation size is inappropriate");
         if (cancellation.getSize() == placement.getSize()) {
             remove(placement);
             placements.remove(placement.getId());
@@ -160,7 +161,7 @@ public class LimitOrderBook {
             psizesum += s * price;
             if(sizesum >= size)
                 return valueOf(sizesum).equals(BigDecimal.ZERO) ? BigDecimal.ZERO :
-                        valueOf(psizesum).divide(valueOf(size));
+                        valueOf(psizesum).divide(valueOf(size), 2, RoundingMode.HALF_UP);
         }
         return BigDecimal.ZERO;
     }
