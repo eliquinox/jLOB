@@ -2,9 +2,9 @@ package dto;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-public class Placement implements GID {
+public class Placement {
 
-    private final long id = GLOBAL_ID.incrementAndGet();
+    private final long id = GID.GLOBAL_ID.incrementAndGet();
     private final long timestamp;
     private final Side side;
     private final long price;
