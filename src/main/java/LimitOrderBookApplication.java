@@ -4,6 +4,7 @@ import dto.Placement;
 import dto.Side;
 import service.CancellationDeserializer;
 import service.PlacementDeserializer;
+import spark.Filter;
 import state.LimitOrderBook;
 
 import java.math.BigDecimal;
@@ -16,6 +17,7 @@ public class LimitOrderBookApplication {
 
     private static final LimitOrderBook LIMIT_ORDER_BOOK = LimitOrderBook.empty();
     private static final GsonBuilder gsonBuilder = new GsonBuilder();
+    private static Gson gson;
 
     public static void main(String[] args) {
         registerTypeAdapters();
@@ -25,12 +27,11 @@ public class LimitOrderBookApplication {
     private static void registerTypeAdapters() {
         gsonBuilder.registerTypeAdapter(Placement.class, new PlacementDeserializer());
         gsonBuilder.registerTypeAdapter(Cancellation.class, new CancellationDeserializer());
+        gson = gsonBuilder.create();
     }
 
     private static void registerEndpoints() {
-        Gson gson = gsonBuilder.create();
-
-        get("book", ((request, response) -> LIMIT_ORDER_BOOK), gson::toJson);
+        get("book", ((request, response) -> gson.toJson(LIMIT_ORDER_BOOK)));
 
         post("book", ((request, response) -> {
             Placement placement = gson.fromJson(request.body(), Placement.class);
@@ -54,6 +55,12 @@ public class LimitOrderBookApplication {
                     LIMIT_ORDER_BOOK.getAverageSalePrice(size);
             return gson.toJson(Map.of("price", price));
         });
+
+        after((Filter) (request, response) -> {
+            response.header("Access-Control-Allow-Origin", "*");
+            response.header("Access-Control-Allow-Methods", "GET");
+        });
+
     }
 
 }
