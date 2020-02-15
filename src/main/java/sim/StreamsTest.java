@@ -12,6 +12,10 @@ import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
+
+/**]
+ * Sandbox for simulation
+ */
 public class StreamsTest {
 
     private static final Random RND = new Random();

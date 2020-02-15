@@ -1,12 +1,13 @@
 # _jLOB_
-## L3 Order Book and Matching Engine Implementaion in Java
+## L3 Order Book and Matching Engine Implementation in Java
 
+jLOB has all the basic capabilities of a functional exchange. It currently supports HTTP protocol as well as basic FIX communication.
 
 ### Quickstart
 
 To start the service:
 
-`gradle bookApp`
+`gradle bookHttpApp`
 
 This will start the orderbook service on `http://localhost:4567`.
 
@@ -124,3 +125,9 @@ _Example Response:_
     "price": 90.0
 }
 ```
+
+To start FIX protocol demo run:
+
+`gradle bookFixApp`
+
+The client process will exchange heartbeat messages with server process, then will send an order, followed by a market data request, to which the server will reply with an excution report.

@@ -1,9 +1,12 @@
-import com.google.gson.*;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import connectivity.http.deserializers.CancellationDeserializer;
+import connectivity.http.deserializers.PlacementDeserializer;
 import dto.Cancellation;
 import dto.Placement;
 import dto.Side;
-import service.CancellationDeserializer;
-import service.PlacementDeserializer;
 import spark.Filter;
 import state.LimitOrderBook;
 
@@ -13,7 +16,7 @@ import java.util.Map;
 import static spark.Spark.*;
 
 
-public class LimitOrderBookApplication {
+public class LimitOrderBookHttpApplication {
 
     private static final LimitOrderBook LIMIT_ORDER_BOOK = LimitOrderBook.empty();
     private static final GsonBuilder gsonBuilder = new GsonBuilder();

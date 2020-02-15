@@ -1,4 +1,4 @@
-package service;
+package connectivity.http.deserializers;
 
 import com.google.gson.*;
 import dto.Cancellation;

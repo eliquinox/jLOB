@@ -4,6 +4,7 @@ import dto.Cancellation;
 import dto.Placement;
 import dto.Side;
 import exceptions.jLOBException;
+import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectRBTreeMap;
 import it.unimi.dsi.fastutil.longs.LongComparators;
@@ -11,6 +12,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.stream.Stream;
 
 import static java.math.BigDecimal.valueOf;
 
@@ -132,6 +134,14 @@ public class LimitOrderBook {
 
     public long getMidPrice(){
         return (bids.firstLongKey() + offers.firstLongKey()) / 2;
+    }
+
+    public Stream<Long2ObjectMap.Entry<Limit>> streamBids() {
+        return bids.long2ObjectEntrySet().stream();
+    }
+
+    public Stream<Long2ObjectMap.Entry<Limit>> streamOffers() {
+        return offers.long2ObjectEntrySet().stream();
     }
 
     public long getBestBid(){
