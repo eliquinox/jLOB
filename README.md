@@ -130,4 +130,4 @@ To start FIX protocol demo, run:
 
 `gradle bookFixApp`
 
-The client process will exchange heartbeat messages with server process, then will send an order, followed by a market data request, to which the server will reply with an excution report.
+The client process will exchange heartbeat messages with server process, then will send an order, followed by a market data request, to which the server will reply with an execution report.
