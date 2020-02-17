@@ -1,7 +1,7 @@
 # _jLOB_
 ## L3 Order Book and Matching Engine Implementation in Java
 
-jLOB has all the basic capabilities of a functional exchange. It currently supports HTTP protocol as well as basic FIX communication.
+jLOB has all the basic capabilities of a functional exchange. It currently supports HTTP protocol as well as basic FIX protocol communication.
 
 ### Quickstart
 
