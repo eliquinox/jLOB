@@ -107,7 +107,7 @@ _Example Response_:
 
 `POST /vwap`
 
-Retrieves a volumen-weighted average price from the orderbook, given a side and a size of a hypothetical order.
+Retrieves a volume-weighted average price from the orderbook, given a side and a size of a hypothetical order.
 
 _Example Request:_
 
@@ -126,7 +126,7 @@ _Example Response:_
 }
 ```
 
-To start FIX protocol demo run:
+To start FIX protocol demo, run:
 
 `gradle bookFixApp`
 
