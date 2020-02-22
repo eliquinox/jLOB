@@ -58,12 +58,5 @@ public class LimitOrderBookHttpApplication {
                     LIMIT_ORDER_BOOK.getAverageSalePrice(size);
             return gson.toJson(Map.of("price", price));
         });
-
-        after((Filter) (request, response) -> {
-            response.header("Access-Control-Allow-Origin", "*");
-            response.header("Access-Control-Allow-Methods", "GET");
-        });
-
     }
-
 }
