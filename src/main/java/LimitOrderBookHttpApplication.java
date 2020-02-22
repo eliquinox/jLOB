@@ -7,7 +7,6 @@ import connectivity.http.deserializers.PlacementDeserializer;
 import dto.Cancellation;
 import dto.Placement;
 import dto.Side;
-import spark.Filter;
 import state.LimitOrderBook;
 
 import java.math.BigDecimal;
