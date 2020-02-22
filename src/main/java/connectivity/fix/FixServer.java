@@ -62,7 +62,6 @@ public class FixServer implements Application {
     }
 
     public static void start() throws ConfigError, InterruptedException {
-        System.out.println(System.getProperty("user.dir"));
         SessionSettings settings = new SessionSettings("resources/fix.server.cfg");
 
         Application application = new FixServer();
