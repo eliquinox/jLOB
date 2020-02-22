@@ -8,10 +8,12 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectRBTreeMap;
 import it.unimi.dsi.fastutil.longs.LongComparators;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.UUID;
 import java.util.stream.Stream;
 
 import static java.math.BigDecimal.valueOf;
@@ -30,12 +32,12 @@ public class LimitOrderBook {
 
     private Long2ObjectRBTreeMap<Limit> bids;
     private Long2ObjectRBTreeMap<Limit> offers;
-    private transient Long2ObjectOpenHashMap<Placement> placements;
+    private transient Object2ObjectOpenHashMap<UUID, Placement> placements;
 
     private LimitOrderBook(){
         this.bids = new Long2ObjectRBTreeMap<>(LongComparators.OPPOSITE_COMPARATOR);
         this.offers = new Long2ObjectRBTreeMap<>(LongComparators.NATURAL_COMPARATOR);
-        this.placements = new Long2ObjectOpenHashMap<>();
+        this.placements = new Object2ObjectOpenHashMap<>();
     }
 
     public static LimitOrderBook empty(){

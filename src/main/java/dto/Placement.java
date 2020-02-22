@@ -2,9 +2,11 @@ package dto;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+import java.util.UUID;
+
 public class Placement {
 
-    private final long id = GID.GLOBAL_ID.incrementAndGet();
+    private final UUID id = UUID.randomUUID();
     private final long timestamp;
     private final Side side;
     private final long price;
@@ -24,7 +26,7 @@ public class Placement {
         this.size = size;
     }
 
-    public long getId() {
+    public UUID getId() {
         return id;
     }
 

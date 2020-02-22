@@ -4,6 +4,7 @@ import com.google.gson.*;
 import dto.Cancellation;
 
 import java.lang.reflect.Type;
+import java.util.UUID;
 
 public class CancellationDeserializer implements JsonDeserializer<Cancellation> {
 
@@ -11,7 +12,7 @@ public class CancellationDeserializer implements JsonDeserializer<Cancellation> 
     public Cancellation deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
         JsonObject jsonObject = json.getAsJsonObject();
         return new Cancellation(
-                jsonObject.get("id").getAsLong(),
+                UUID.fromString(jsonObject.get("id").getAsString()),
                 jsonObject.get("size").getAsLong()
         );
     }

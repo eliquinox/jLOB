@@ -3,9 +3,11 @@ package state;
 import dto.Placement;
 import dto.Side;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class Limit {
     private final Side side;
@@ -36,10 +38,10 @@ public class Limit {
         return placement;
     }
 
-    public long match(Placement incomingPlacement, Long2ObjectOpenHashMap<Placement> placementIds){
+    public long match(Placement incomingPlacement, Object2ObjectOpenHashMap<UUID, Placement> placementIds){
         while (incomingPlacement.getSize() > 0 && !placements.isEmpty()) {
             Placement restingPlacement = placements.get(0);
-            long restingPlacementId = restingPlacement.getId();
+            UUID restingPlacementId = restingPlacement.getId();
             long orderSize = restingPlacement.getSize();
             if (orderSize > incomingPlacement.getSize()) {
                 restingPlacement.reduce(incomingPlacement.getSize());

@@ -2,19 +2,21 @@ package dto;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+import java.util.UUID;
+
 public class Cancellation {
 
-    private long id;
+    private UUID id;
     private final long timestamp;
     private final long size;
 
-    public Cancellation(long placementId, long cancellationSize) {
+    public Cancellation(UUID placementId, long cancellationSize) {
         this.timestamp = System.nanoTime();
         this.id = placementId;
         this.size = cancellationSize;
     }
 
-    public long getId() {
+    public UUID getId() {
         return id;
     }
 
