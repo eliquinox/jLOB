@@ -5,11 +5,13 @@ import static spark.Spark.*;
 
 public class LimitOrderBookHttpApplication {
 
+    private static final String ORIGIN = "";
+
     public static void main(String[] args) {
         path("book", () -> {
-            get("", LimitOrderBookApi.getLimitOrderBook);
-            post("", LimitOrderBookApi.placeOrder);
-            delete("", LimitOrderBookApi.reduceOrder);
+            get(ORIGIN, LimitOrderBookApi.getLimitOrderBook);
+            post(ORIGIN, LimitOrderBookApi.placeOrder);
+            delete(ORIGIN, LimitOrderBookApi.reduceOrder);
         });
         post("vwap", LimitOrderBookApi.getVwap);
     }
