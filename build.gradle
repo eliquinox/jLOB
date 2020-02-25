@@ -39,5 +39,5 @@ task bookHttpApp(type: JavaExec) {
 task bookFixApp(type: JavaExec) {
     classpath sourceSets.main.runtimeClasspath
     main = "LimitOrderBookFixApplication"
-    workingDir(new File(getWorkingDir().absoluteFile.toString() + "/src/main"))
+    workingDir(new File(getWorkingDir().absoluteFile.toString() + "/src/main").toString())
 }
