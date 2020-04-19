@@ -10,13 +10,21 @@ import org.mockito.ArgumentCaptor;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
 public class LimitOrderBookListenerTest {
 
     private LimitOrderBook book;
     private LimitOrderBookListener listener;
+
+    private static boolean matchEqualButForTimestamp(Match expected, Match actual) {
+        return expected.getMakerPlacementId().equals(actual.getMakerPlacementId())
+                && expected.getTakerPlacementId().equals(actual.getTakerPlacementId())
+                && expected.getSize() == actual.getSize();
+    }
 
     @BeforeEach
     protected void setUp() {
@@ -25,7 +33,7 @@ public class LimitOrderBookListenerTest {
     }
 
     @Test
-    void shouldCallOnPlacement() {
+    void shouldCallOnPlacementWhenPlacing() {
         // when
         Placement placement = new Placement(Side.BID, 1000, 100);
         book.place(placement);
@@ -39,7 +47,7 @@ public class LimitOrderBookListenerTest {
     }
 
     @Test
-    void shouldCallOnCancel() {
+    void shouldCallOnCancelWhenCancelling() {
         // when
         Placement placement = new Placement(Side.BID, 1000, 100);
         book.place(placement);
@@ -60,7 +68,7 @@ public class LimitOrderBookListenerTest {
     }
 
     @Test
-    void shouldCallOnMatchAndOnMatchOnPlacement() {
+    void shouldCallOnPlacementAndOnMatchWhenMatching() {
         // when
         Placement makerPlacement = new Placement(Side.BID, 1000, 100);
         book.place(makerPlacement);
@@ -81,5 +89,69 @@ public class LimitOrderBookListenerTest {
         assertEquals(matchArgument.getMakerPlacementId(), match.getMakerPlacementId());
         assertEquals(matchArgument.getTakerPlacementId(), match.getTakerPlacementId());
         assertEquals(matchArgument.getSize(), match.getSize());
+    }
+
+    @Test
+    void shouldCallOnMatchMultipleTimesWhenMatchingAgainstMultipleMakers() {
+        // when
+        Placement makerPlacement1 = new Placement(Side.BID, 1000, 100);
+        Placement makerPlacement2 = new Placement(Side.BID, 1000, 50);
+        Placement makerPlacement3 = new Placement(Side.BID, 1000, 25);
+        Placement takerPlacement = new Placement(Side.OFFER, 1000, 175);
+
+        book.place(makerPlacement1);
+        book.place(makerPlacement2);
+        book.place(makerPlacement3);
+        book.place(takerPlacement);
+
+        ArgumentCaptor<Placement> placementArgumentCaptor = ArgumentCaptor.forClass(Placement.class);
+        verify(listener, times(4)).onPlacement(placementArgumentCaptor.capture());
+        var placementArguments = placementArgumentCaptor.getAllValues();
+
+        ArgumentCaptor<Match> matchArgumentCaptor = ArgumentCaptor.forClass(Match.class);
+        verify(listener, times(3)).onMatch(matchArgumentCaptor.capture());
+        var matchArguments = matchArgumentCaptor.getAllValues();
+        var match1 = new Match(makerPlacement1.getUuid(), takerPlacement.getUuid(), 100);
+        var match2 = new Match(makerPlacement2.getUuid(), takerPlacement.getUuid(), 50);
+        var match3 = new Match(makerPlacement3.getUuid(), takerPlacement.getUuid(), 25);
+
+        assertThat(placementArguments, containsInAnyOrder(makerPlacement1, makerPlacement2, makerPlacement3, takerPlacement));
+        assertTrue(matchEqualButForTimestamp(match1, matchArguments.get(0)));
+        assertTrue(matchEqualButForTimestamp(match2, matchArguments.get(1)));
+        assertTrue(matchEqualButForTimestamp(match3, matchArguments.get(2)));
+    }
+
+    @Test
+    void shouldCallOnMatchMultipleTimesWhenTakeOverflows() {
+        // when
+        Placement makerPlacement1 = new Placement(Side.BID, 1000, 100);
+        Placement makerPlacement2 = new Placement(Side.BID, 1000, 50);
+        Placement makerPlacement3 = new Placement(Side.BID, 1000, 25);
+        Placement takerPlacement = new Placement(Side.OFFER, 1000, 200);
+
+        book.place(makerPlacement1);
+        book.place(makerPlacement2);
+        book.place(makerPlacement3);
+        book.place(takerPlacement);
+
+        ArgumentCaptor<Placement> placementArgumentCaptor = ArgumentCaptor.forClass(Placement.class);
+        verify(listener, times(4)).onPlacement(placementArgumentCaptor.capture());
+        var placementArguments = placementArgumentCaptor.getAllValues();
+
+        ArgumentCaptor<Match> matchArgumentCaptor = ArgumentCaptor.forClass(Match.class);
+        verify(listener, times(3)).onMatch(matchArgumentCaptor.capture());
+        var matchArguments = matchArgumentCaptor.getAllValues();
+        var match1 = new Match(makerPlacement1.getUuid(), takerPlacement.getUuid(), 100);
+        var match2 = new Match(makerPlacement2.getUuid(), takerPlacement.getUuid(), 50);
+        var match3 = new Match(makerPlacement3.getUuid(), takerPlacement.getUuid(), 25);
+
+        assertThat(placementArguments, containsInAnyOrder(makerPlacement1, makerPlacement2, makerPlacement3, takerPlacement));
+        assertTrue(matchEqualButForTimestamp(match1, matchArguments.get(0)));
+        assertTrue(matchEqualButForTimestamp(match2, matchArguments.get(1)));
+        assertTrue(matchEqualButForTimestamp(match3, matchArguments.get(2)));
+
+        // check the remainder is resting
+        assertThat(book.getBestOffer(), equalTo(1000L));
+        assertThat(book.getBestOfferAmount(), equalTo(25L));
     }
 }

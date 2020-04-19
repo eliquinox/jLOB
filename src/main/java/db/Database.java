@@ -8,7 +8,7 @@ public class Database {
 
     public static DSLContext database;
 
-    public static void create(DatabaseConfig databaseConfig) {
+    public static void configure(DatabaseConfig databaseConfig) {
         database = DSL.using(
                 databaseConfig.getUrl(),
                 databaseConfig.getUsername(),
