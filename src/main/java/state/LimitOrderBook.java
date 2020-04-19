@@ -65,30 +65,30 @@ public class LimitOrderBook {
     }
 
     private void bid(Placement placement) {
-        long remainingQuantity = placement.getSize();
+        Placement takerPlacement = placement.copy();
         Limit limit  = getBestLimit(offers);
-        while (remainingQuantity > 0 && limit != null && limit.getPrice() <= placement.getPrice()) {
-            remainingQuantity = limit.match(placement.copy(), placements, listener::onMatch);
+        while (takerPlacement.getSize() > 0 && limit != null && limit.getPrice() <= takerPlacement.getPrice()) {
+            takerPlacement = limit.match(takerPlacement, placements::remove, listener::onMatch);
             if (limit.isEmpty())
                 offers.remove(limit.getPrice());
             limit = getBestLimit(offers);
         }
-        if (remainingQuantity > 0) {
-            placements.put(placement.getUuid(), place(bids, placement));
+        if (takerPlacement.getSize() > 0) {
+            placements.put(placement.getUuid(), place(bids, takerPlacement));
         }
     }
 
     private void offer(Placement placement) {
-        long remainingQuantity = placement.getSize();
+        Placement takerPlacement = placement.copy();
         Limit limit = getBestLimit(bids);
-        while (remainingQuantity > 0 && limit != null && limit.getPrice() >= placement.getPrice()) {
-            remainingQuantity = limit.match(placement.copy(), placements, listener::onMatch);
+        while (takerPlacement.getSize() > 0 && limit != null && limit.getPrice() >= takerPlacement.getPrice()) {
+            takerPlacement = limit.match(takerPlacement, placements::remove, listener::onMatch);
             if (limit.isEmpty())
                 bids.remove(limit.getPrice());
             limit = getBestLimit(bids);
         }
-        if (remainingQuantity > 0) {
-            placements.put(placement.getUuid(), place(offers, placement));
+        if (takerPlacement.getSize() > 0) {
+            placements.put(takerPlacement.getUuid(), place(offers, takerPlacement));
         }
     }
 
@@ -107,7 +107,6 @@ public class LimitOrderBook {
             throw new JLOBException("Placement does not exist or cancellation size is inappropriate");
         if (cancellation.getSize() == placement.getSize()) {
             remove(placement);
-            placements.remove(placement.getUuid());
         } else {
             placement.reduce(cancellation.getSize());
         }
@@ -128,6 +127,8 @@ public class LimitOrderBook {
         limit.remove(placement);
         if (limit.isEmpty())
             remove(limit);
+
+        placements.remove(placement.getUuid());
     }
 
     private void remove(Limit limit) {

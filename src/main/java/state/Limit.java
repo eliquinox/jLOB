@@ -41,25 +41,25 @@ public class Limit {
         return placement;
     }
 
-    public long match(Placement takerPlacement, Object2ObjectOpenHashMap<UUID, Placement> placementSet,
+    public Placement match(Placement takerPlacement, Consumer<UUID> placementRemoveCallback,
                       Consumer<Match> matchCallback) {
         while (takerPlacement.getSize() > 0 && !placements.isEmpty()) {
             Placement makerPlacement = placements.get(0);
-            UUID restingPlacementId = makerPlacement.getUuid();
-            long orderSize = makerPlacement.getSize();
-            if (orderSize > takerPlacement.getSize()) {
-                long priorTakerPlacementSize = takerPlacement.getSize();
-                makerPlacement.reduce(takerPlacement.getSize());
-                takerPlacement.reduce(takerPlacement.getSize());
-                matchCallback.accept(new Match(makerPlacement.getUuid(), takerPlacement.getUuid(), priorTakerPlacementSize));
+            UUID makerPlacementId = makerPlacement.getUuid();
+            long makerPlacementSize = makerPlacement.getSize();
+            long takerPlacementUnfilledSize = takerPlacement.getSize();
+            if (makerPlacementSize > takerPlacementUnfilledSize) {
+                makerPlacement.reduce(takerPlacementUnfilledSize);
+                takerPlacement.reduce(takerPlacementUnfilledSize);
+                matchCallback.accept(new Match(makerPlacement.getUuid(), takerPlacement.getUuid(), takerPlacementUnfilledSize));
             } else {
                 placements.remove(0);
-                takerPlacement.reduce(orderSize);
-                placementSet.remove(restingPlacementId);
-                matchCallback.accept(new Match(makerPlacement.getUuid(), takerPlacement.getUuid(), orderSize));
+                takerPlacement.reduce(makerPlacementSize);
+                placementRemoveCallback.accept(makerPlacementId);
+                matchCallback.accept(new Match(makerPlacement.getUuid(), takerPlacement.getUuid(), makerPlacementSize));
             }
         }
-        return takerPlacement.getSize();
+        return takerPlacement;
     }
 
     public long getVolume(){

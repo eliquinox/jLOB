@@ -9,15 +9,18 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
 
 
 public class LimitOrderBookTest {
 
     private LimitOrderBook book;
+    private LimitOrderBookListener listener;
 
     @BeforeEach
     protected void setUp() {
-        book = LimitOrderBook.empty();
+        listener = mock(LimitOrderBookListener.class);
+        book = new LimitOrderBook(listener);
 
         book.place(new Placement(Side.OFFER, 1300, 245));
         book.place(new Placement(Side.OFFER, 1200, 25));
