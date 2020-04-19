@@ -7,7 +7,7 @@ import java.util.UUID;
 
 public class Placement {
 
-    private final UUID uuid = UUID.randomUUID();
+    private UUID uuid = UUID.randomUUID();
     private final Instant timestamp;
     private final Side side;
     private final long price;
@@ -25,6 +25,66 @@ public class Placement {
         this.side = Side.fromString(side);
         this.price = price;
         this.size = size;
+    }
+
+    public Placement copy() {
+        return builder()
+                .withUuid(this.uuid)
+                .withInstant(this.timestamp)
+                .withSide(this.side)
+                .withPrice(this.price)
+                .withSize(this.size)
+                .build();
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    private Placement(Builder builder) {
+        this.uuid = builder.uuid;
+        this.timestamp = builder.timestamp;
+        this.side = builder.side;
+        this.price = builder.price;
+        this.size = builder.size;
+    }
+
+    private static class Builder {
+
+        private UUID uuid;
+        private Instant timestamp;
+        private Side side;
+        private long price;
+        private long size;
+
+        Builder withUuid(UUID uuid) {
+            this.uuid = uuid;
+            return this;
+        }
+
+        Builder withInstant(Instant timestamp) {
+            this.timestamp = timestamp;
+            return this;
+        }
+
+        Builder withSide(Side side) {
+            this.side = side;
+            return this;
+        }
+
+        Builder withPrice(long price) {
+            this.price = price;
+            return this;
+        }
+
+        Builder withSize(long size) {
+            this.size = size;
+            return this;
+        }
+
+        Placement build() {
+            return new Placement(this);
+        }
     }
 
     public UUID getUuid() {

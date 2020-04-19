@@ -68,7 +68,7 @@ public class LimitOrderBook {
         long remainingQuantity = placement.getSize();
         Limit limit  = getBestLimit(offers);
         while (remainingQuantity > 0 && limit != null && limit.getPrice() <= placement.getPrice()) {
-            remainingQuantity = limit.match(placement, placements, listener::onMatch);
+            remainingQuantity = limit.match(placement.copy(), placements, listener::onMatch);
             if (limit.isEmpty())
                 offers.remove(limit.getPrice());
             limit = getBestLimit(offers);
@@ -82,7 +82,7 @@ public class LimitOrderBook {
         long remainingQuantity = placement.getSize();
         Limit limit = getBestLimit(bids);
         while (remainingQuantity > 0 && limit != null && limit.getPrice() >= placement.getPrice()) {
-            remainingQuantity = limit.match(placement, placements, listener::onMatch);
+            remainingQuantity = limit.match(placement.copy(), placements, listener::onMatch);
             if (limit.isEmpty())
                 bids.remove(limit.getPrice());
             limit = getBestLimit(bids);

@@ -12,10 +12,11 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public class Limit {
-    private final Side side;
 
+    private final Side side;
     private final long price;
     private final List<Placement> placements;
+
     public Limit(Side side, long price) {
         this.side = side;
         this.price = price;
@@ -47,14 +48,16 @@ public class Limit {
             UUID restingPlacementId = makerPlacement.getUuid();
             long orderSize = makerPlacement.getSize();
             if (orderSize > takerPlacement.getSize()) {
+                long priorTakerPlacementSize = takerPlacement.getSize();
                 makerPlacement.reduce(takerPlacement.getSize());
                 takerPlacement.reduce(takerPlacement.getSize());
+                matchCallback.accept(new Match(makerPlacement.getUuid(), takerPlacement.getUuid(), priorTakerPlacementSize));
             } else {
                 placements.remove(0);
                 takerPlacement.reduce(orderSize);
                 placementSet.remove(restingPlacementId);
+                matchCallback.accept(new Match(makerPlacement.getUuid(), takerPlacement.getUuid(), orderSize));
             }
-            matchCallback.accept(new Match(makerPlacement.getUuid(), takerPlacement.getUuid(), orderSize));
         }
         return takerPlacement.getSize();
     }
