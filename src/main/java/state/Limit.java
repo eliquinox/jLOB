@@ -1,19 +1,21 @@
 package state;
 
+import dto.Match;
 import dto.Placement;
 import dto.Side;
-import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 public class Limit {
     private final Side side;
 
     private final long price;
-    private List<Placement> placements;
+    private final List<Placement> placements;
     public Limit(Side side, long price) {
         this.side = side;
         this.price = price;
@@ -38,21 +40,23 @@ public class Limit {
         return placement;
     }
 
-    public long match(Placement incomingPlacement, Object2ObjectOpenHashMap<UUID, Placement> placementIds){
-        while (incomingPlacement.getSize() > 0 && !placements.isEmpty()) {
-            Placement restingPlacement = placements.get(0);
-            UUID restingPlacementId = restingPlacement.getId();
-            long orderSize = restingPlacement.getSize();
-            if (orderSize > incomingPlacement.getSize()) {
-                restingPlacement.reduce(incomingPlacement.getSize());
-                incomingPlacement.reduce(incomingPlacement.getSize());
+    public long match(Placement takerPlacement, Object2ObjectOpenHashMap<UUID, Placement> placementSet,
+                      Consumer<Match> matchCallback) {
+        while (takerPlacement.getSize() > 0 && !placements.isEmpty()) {
+            Placement makerPlacement = placements.get(0);
+            UUID restingPlacementId = makerPlacement.getUuid();
+            long orderSize = makerPlacement.getSize();
+            if (orderSize > takerPlacement.getSize()) {
+                makerPlacement.reduce(takerPlacement.getSize());
+                takerPlacement.reduce(takerPlacement.getSize());
             } else {
                 placements.remove(0);
-                incomingPlacement.reduce(orderSize);
-                placementIds.remove(restingPlacementId);
+                takerPlacement.reduce(orderSize);
+                placementSet.remove(restingPlacementId);
             }
+            matchCallback.accept(new Match(makerPlacement.getUuid(), takerPlacement.getUuid(), orderSize));
         }
-        return incomingPlacement.getSize();
+        return takerPlacement.getSize();
     }
 
     public long getVolume(){

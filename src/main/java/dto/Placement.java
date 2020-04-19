@@ -2,32 +2,33 @@ package dto;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+import java.time.Instant;
 import java.util.UUID;
 
 public class Placement {
 
-    private final UUID id = UUID.randomUUID();
-    private final long timestamp;
+    private final UUID uuid = UUID.randomUUID();
+    private final Instant timestamp;
     private final Side side;
     private final long price;
     private long size;
 
     public Placement(Side side, long price, long size) {
-        this.timestamp = System.nanoTime();
+        this.timestamp = Instant.now();
         this.side = side;
         this.price = price;
         this.size = size;
     }
 
     public Placement(String side, long price, long size) {
-        this.timestamp = System.nanoTime();
+        this.timestamp = Instant.now();
         this.side = Side.fromString(side);
         this.price = price;
         this.size = size;
     }
 
-    public UUID getId() {
-        return id;
+    public UUID getUuid() {
+        return uuid;
     }
 
     public long getSize() {
@@ -42,7 +43,7 @@ public class Placement {
         return side;
     }
 
-    public long getTimestamp() {
+    public Instant getTimestamp() {
         return timestamp;
     }
 
@@ -53,7 +54,7 @@ public class Placement {
     @Override
     public String toString() {
         return new ToStringBuilder(this)
-                .append("id", id)
+                .append("id", uuid)
                 .append("timestamp", timestamp)
                 .append("side", getSide())
                 .append("price", getPrice())

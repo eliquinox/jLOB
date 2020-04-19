@@ -1,0 +1,11 @@
+protocol: http
+database:
+  host: localhost
+  name: jlob
+  port: 5432
+  username: postgres
+  password: postgres
+
+redis:
+  host: localhost
+  port: 6379
