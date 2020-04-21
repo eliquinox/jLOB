@@ -39,11 +39,17 @@ public class LimitOrderBookListenerTest {
         book.place(placement);
 
         ArgumentCaptor<Placement> placementArgumentCaptor = ArgumentCaptor.forClass(Placement.class);
-        verify(listener, times(1)).onPlacement(placementArgumentCaptor.capture());
+        ArgumentCaptor<LimitOrderBook> bookArgumentCaptor = ArgumentCaptor.forClass(LimitOrderBook.class);
+        verify(listener, times(1)).onPlacement(
+                placementArgumentCaptor.capture(),
+                bookArgumentCaptor.capture()
+        );
         var placementArgument = placementArgumentCaptor.getValue();
+        var bookArgument = bookArgumentCaptor.getValue();
 
         // then
         assertEquals(placement, placementArgument);
+        assertEquals(book, bookArgument);
     }
 
     @Test
@@ -55,11 +61,21 @@ public class LimitOrderBookListenerTest {
         book.cancel(cancellation);
 
         ArgumentCaptor<Cancellation> cancellationArgumentCaptor = ArgumentCaptor.forClass(Cancellation.class);
-        verify(listener, times(1)).onCancellation(cancellationArgumentCaptor.capture());
+        ArgumentCaptor<LimitOrderBook> bookArgumentCaptor1 = ArgumentCaptor.forClass(LimitOrderBook.class);
+
+        verify(listener, times(1)).onCancellation(
+                cancellationArgumentCaptor.capture(),
+                bookArgumentCaptor1.capture()
+        );
         var cancellationArgument = cancellationArgumentCaptor.getValue();
 
         ArgumentCaptor<Placement> placementArgumentCaptor = ArgumentCaptor.forClass(Placement.class);
-        verify(listener, times(1)).onPlacement(placementArgumentCaptor.capture());
+        ArgumentCaptor<LimitOrderBook> bookArgumentCaptor2 = ArgumentCaptor.forClass(LimitOrderBook.class);
+
+        verify(listener, times(1)).onPlacement(
+                placementArgumentCaptor.capture(),
+                bookArgumentCaptor2.capture()
+        );
         var placementArgument = placementArgumentCaptor.getValue();
 
         // then
@@ -76,7 +92,11 @@ public class LimitOrderBookListenerTest {
         book.place(takerPlacement);
 
         ArgumentCaptor<Placement> placementArgumentCaptor = ArgumentCaptor.forClass(Placement.class);
-        verify(listener, times(2)).onPlacement(placementArgumentCaptor.capture());
+        ArgumentCaptor<LimitOrderBook> bookArgumentCaptor = ArgumentCaptor.forClass(LimitOrderBook.class);
+        verify(listener, times(2)).onPlacement(
+                placementArgumentCaptor.capture(),
+                bookArgumentCaptor.capture()
+        );
         var placementArguments = placementArgumentCaptor.getAllValues();
 
         ArgumentCaptor<Match> matchArgumentCaptor = ArgumentCaptor.forClass(Match.class);
@@ -105,7 +125,11 @@ public class LimitOrderBookListenerTest {
         book.place(takerPlacement);
 
         ArgumentCaptor<Placement> placementArgumentCaptor = ArgumentCaptor.forClass(Placement.class);
-        verify(listener, times(4)).onPlacement(placementArgumentCaptor.capture());
+        ArgumentCaptor<LimitOrderBook> bookArgumentCaptor = ArgumentCaptor.forClass(LimitOrderBook.class);
+        verify(listener, times(4)).onPlacement(
+                placementArgumentCaptor.capture(),
+                bookArgumentCaptor.capture()
+        );
         var placementArguments = placementArgumentCaptor.getAllValues();
 
         ArgumentCaptor<Match> matchArgumentCaptor = ArgumentCaptor.forClass(Match.class);
@@ -135,7 +159,11 @@ public class LimitOrderBookListenerTest {
         book.place(takerPlacement);
 
         ArgumentCaptor<Placement> placementArgumentCaptor = ArgumentCaptor.forClass(Placement.class);
-        verify(listener, times(4)).onPlacement(placementArgumentCaptor.capture());
+        ArgumentCaptor<LimitOrderBook> bookArgumentCaptor = ArgumentCaptor.forClass(LimitOrderBook.class);
+        verify(listener, times(4)).onPlacement(
+                placementArgumentCaptor.capture(),
+                bookArgumentCaptor.capture()
+        );
         var placementArguments = placementArgumentCaptor.getAllValues();
 
         ArgumentCaptor<Match> matchArgumentCaptor = ArgumentCaptor.forClass(Match.class);

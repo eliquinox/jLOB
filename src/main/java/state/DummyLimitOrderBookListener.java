@@ -7,12 +7,12 @@ import dto.Placement;
 public class DummyLimitOrderBookListener implements LimitOrderBookListener {
 
     @Override
-    public void onPlacement(Placement placement) {
+    public void onPlacement(Placement placement, LimitOrderBook limitOrderBook) {
 
     }
 
     @Override
-    public void onCancellation(Cancellation cancellation) {
+    public void onCancellation(Cancellation cancellation, LimitOrderBook limitOrderBook) {
 
     }
 

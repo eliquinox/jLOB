@@ -3,15 +3,14 @@ package state;
 import dto.Match;
 import dto.Placement;
 import dto.Side;
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-public class Limit {
+public class Limit implements Serializable {
 
     private final Side side;
     private final long price;
@@ -41,8 +40,12 @@ public class Limit {
         return placement;
     }
 
+    public List<Placement> getPlacements() {
+        return new ArrayList<>(placements);
+    }
+
     public Placement match(Placement takerPlacement, Consumer<UUID> placementRemoveCallback,
-                      Consumer<Match> matchCallback) {
+                           Consumer<Match> matchCallback) {
         while (takerPlacement.getSize() > 0 && !placements.isEmpty()) {
             Placement makerPlacement = placements.get(0);
             UUID makerPlacementId = makerPlacement.getUuid();

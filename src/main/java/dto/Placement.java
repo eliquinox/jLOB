@@ -2,10 +2,11 @@ package dto;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+import java.io.Serializable;
 import java.time.Instant;
 import java.util.UUID;
 
-public class Placement {
+public class Placement implements Serializable {
 
     private UUID uuid = UUID.randomUUID();
     private final Instant timestamp;

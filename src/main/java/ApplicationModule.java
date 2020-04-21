@@ -9,7 +9,6 @@ import connectivity.ServerRunner;
 import db.Migrator;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
-import org.jooq.impl.DefaultDSLContext;
 import state.LimitOrderBook;
 import state.LimitOrderBookListener;
 import state.PersistenceLimitOrderBookListener;
@@ -35,8 +34,8 @@ public class ApplicationModule extends AbstractModule {
     }
 
     @Provides
-    public DefaultDSLContext dslContext(DatabaseConfig databaseConfig) {
-        return (DefaultDSLContext) DSL.using(
+    public DSLContext dslContext(DatabaseConfig databaseConfig) {
+        return DSL.using(
                 databaseConfig.getUrl(),
                 databaseConfig.getUsername(),
                 databaseConfig.getPassword()
@@ -61,17 +60,11 @@ public class ApplicationModule extends AbstractModule {
     }
 
     @Provides
-    public LimitOrderBook limitOrderBook(LimitOrderBookListener listener) {
-        return new LimitOrderBook(listener);
-    }
-
-    @Provides
-    public LimitOrderBookListener bookListener() {
+    public LimitOrderBookListener listener() {
         return new PersistenceLimitOrderBookListener();
     }
 
     @Override
     protected void configure() {
-        requestStaticInjection(DefaultDSLContext.class);
     }
 }

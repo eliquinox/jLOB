@@ -39,6 +39,7 @@ dependencies {
     compile group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml', version: '2.10.3'
     compile group: 'org.quickfixj', name: 'quickfixj-core', version: '2.1.1'
     compile group: 'org.quickfixj', name: 'quickfixj-messages-fix42', version: '2.1.1'
+    compile group: 'org.redisson', name: 'redisson', version: '3.12.5'
     compile group: 'org.jooq', name: 'jooq', version: '3.13.1'
     compile group: 'org.jooq', name: 'jooq-codegen', version: '3.13.1'
     compile group: 'org.jooq', name: 'jooq-meta', version: '3.13.1'

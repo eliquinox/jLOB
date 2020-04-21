@@ -1,5 +1,6 @@
 package state;
 
+import cache.Cache;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import dto.Cancellation;
@@ -12,6 +13,7 @@ import it.unimi.dsi.fastutil.longs.LongComparators;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.UUID;
@@ -23,14 +25,14 @@ import static java.math.BigDecimal.valueOf;
  * L3 Limit Order Book implementation.
  *
  * Bids and offers are kept sorted in reverse natural and natural orders respectively
- * by the virtue of {@code Long2ObjectRBTreeMap<Limit>}s
+ * by virtue of {@code Long2ObjectRBTreeMap<Limit>}s
  *
  * {@code Limit}s represent price levels in an order book and wrap around a collection of {@code Placement}s.
  *
  */
 
 @Singleton
-public class LimitOrderBook {
+public class LimitOrderBook implements Serializable {
 
     private final transient LimitOrderBookListener listener;
     private final Long2ObjectRBTreeMap<Limit> bids;
@@ -40,9 +42,26 @@ public class LimitOrderBook {
     @Inject
     public LimitOrderBook(LimitOrderBookListener listener) {
         this.listener = listener;
-        this.bids = new Long2ObjectRBTreeMap<>(LongComparators.OPPOSITE_COMPARATOR);
-        this.offers = new Long2ObjectRBTreeMap<>(LongComparators.NATURAL_COMPARATOR);
-        this.placements = new Object2ObjectOpenHashMap<>();
+        if (Cache.bookKeyExists()) {
+            LimitOrderBook limitOrderBook = Cache.getLimitOrderBook();
+            this.bids = limitOrderBook.bids;
+            this.offers = limitOrderBook.offers;
+            this.placements = new Object2ObjectOpenHashMap<>();
+            this.bids.long2ObjectEntrySet().forEach(limitEntry -> limitEntry.getValue()
+                    .getPlacements()
+                    .forEach(placement -> {
+                        this.placements.put(placement.getUuid(), placement);
+                    }));
+            this.offers.long2ObjectEntrySet().forEach(limitEntry -> limitEntry.getValue()
+                    .getPlacements()
+                    .forEach(placement -> {
+                        this.placements.put(placement.getUuid(), placement);
+                    }));
+        } else {
+            this.bids = new Long2ObjectRBTreeMap<>(LongComparators.OPPOSITE_COMPARATOR);
+            this.offers = new Long2ObjectRBTreeMap<>(LongComparators.NATURAL_COMPARATOR);
+            this.placements = new Object2ObjectOpenHashMap<>();
+        }
     }
 
     public static LimitOrderBook empty(){
@@ -61,7 +80,7 @@ public class LimitOrderBook {
         else
             offer(placement);
 
-        listener.onPlacement(placement);
+        listener.onPlacement(placement, this);
     }
 
     private void bid(Placement placement) {
@@ -111,7 +130,7 @@ public class LimitOrderBook {
             placement.reduce(cancellation.getSize());
         }
 
-        listener.onCancellation(cancellation);
+        listener.onCancellation(cancellation, this);
     }
 
     private void remove(Placement placement) {

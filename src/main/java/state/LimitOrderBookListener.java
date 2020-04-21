@@ -5,7 +5,7 @@ import dto.Match;
 import dto.Placement;
 
 public interface LimitOrderBookListener {
-    void onPlacement(Placement placement);
-    void onCancellation(Cancellation cancellation);
+    void onPlacement(Placement placement, LimitOrderBook limitOrderBook);
+    void onCancellation(Cancellation cancellation, LimitOrderBook limitOrderBook);
     void onMatch(Match match);
 }
