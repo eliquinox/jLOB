@@ -40,10 +40,10 @@ public class LimitOrderBook implements Serializable {
     private final transient Object2ObjectOpenHashMap<UUID, Placement> placements;
 
     @Inject
-    public LimitOrderBook(LimitOrderBookListener listener) {
+    public LimitOrderBook(LimitOrderBookListener listener, Cache cache) {
         this.listener = listener;
-        if (Cache.bookKeyExists()) {
-            LimitOrderBook limitOrderBook = Cache.getLimitOrderBook();
+        if (cache.bookKeyExists()) {
+            LimitOrderBook limitOrderBook = cache.getLimitOrderBook();
             this.bids = limitOrderBook.bids;
             this.offers = limitOrderBook.offers;
             this.placements = new Object2ObjectOpenHashMap<>();
@@ -62,6 +62,13 @@ public class LimitOrderBook implements Serializable {
             this.offers = new Long2ObjectRBTreeMap<>(LongComparators.NATURAL_COMPARATOR);
             this.placements = new Object2ObjectOpenHashMap<>();
         }
+    }
+
+    private LimitOrderBook(LimitOrderBookListener listener) {
+        this.listener = listener;
+        this.bids = new Long2ObjectRBTreeMap<>(LongComparators.OPPOSITE_COMPARATOR);
+        this.offers = new Long2ObjectRBTreeMap<>(LongComparators.NATURAL_COMPARATOR);
+        this.placements = new Object2ObjectOpenHashMap<>();
     }
 
     public static LimitOrderBook empty(){

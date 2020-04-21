@@ -1,5 +1,6 @@
 package performance;
 
+import cache.Cache;
 import dto.Cancellation;
 import dto.Placement;
 import dto.Side;
@@ -7,6 +8,8 @@ import org.openjdk.jmh.annotations.*;
 import state.LimitOrderBook;
 
 import java.util.concurrent.TimeUnit;
+
+import static org.mockito.Mockito.mock;
 
 public class PerformanceTests {
 

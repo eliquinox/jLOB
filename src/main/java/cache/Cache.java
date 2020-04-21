@@ -1,5 +1,6 @@
 package cache;
 
+import com.google.inject.Inject;
 import config.RedisConfig;
 import org.redisson.Redisson;
 import org.redisson.api.RBucket;
@@ -9,31 +10,32 @@ import state.LimitOrderBook;
 
 public class Cache {
 
-    public static RedissonClient cache;
-    private static RBucket<LimitOrderBook> limitOrderBookBucket;
+    private final RedissonClient cache;
+    private final RBucket<LimitOrderBook> limitOrderBookBucket;
 
-    public static void configure(RedisConfig redisConfig) {
+    @Inject
+    public Cache(RedisConfig redisConfig) {
         Config config = new Config();
         config.useSingleServer()
                 .setAddress("redis://" + redisConfig.getHost() + ":" + redisConfig.getPort());
 
-        cache = Redisson.create(config);
-        limitOrderBookBucket = cache.getBucket("book");
+        this.cache = Redisson.create(config);
+        this.limitOrderBookBucket = cache.getBucket("book");
     }
 
-    public static boolean isConfigured() {
+    public boolean isConfigured() {
         return cache != null && limitOrderBookBucket != null;
     }
 
-    public static void cacheLimitOrderBook(LimitOrderBook limitOrderBook) {
+    public void cacheLimitOrderBook(LimitOrderBook limitOrderBook) {
         limitOrderBookBucket.set(limitOrderBook);
     }
 
-    public static LimitOrderBook getLimitOrderBook() {
+    public LimitOrderBook getLimitOrderBook() {
         return limitOrderBookBucket.get();
     }
 
-    public static boolean bookKeyExists() {
+    public boolean bookKeyExists() {
         return isConfigured() && limitOrderBookBucket.isExists();
     }
 }

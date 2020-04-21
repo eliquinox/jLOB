@@ -1,3 +1,4 @@
+import cache.Cache;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import config.Config;
@@ -48,6 +49,11 @@ public class ApplicationModule extends AbstractModule {
     }
 
     @Provides
+    public Cache cache(RedisConfig redisConfig) {
+        return new Cache(redisConfig);
+    }
+
+    @Provides
     public Migrator migrator(DatabaseConfig databaseConfig) {
         return new Migrator(databaseConfig);
     }
@@ -56,12 +62,12 @@ public class ApplicationModule extends AbstractModule {
     public ServerRunner serverRunner(Config config, LimitOrderBook limitOrderBook) {
         return config.getProtocol().equals("http") ?
                 new LimitOrderBookHttpServerRunner(limitOrderBook) :
-                new LimitOrderBookFixServerRunner();
+                new LimitOrderBookFixServerRunner(limitOrderBook);
     }
 
     @Provides
-    public LimitOrderBookListener listener() {
-        return new PersistenceLimitOrderBookListener();
+    public LimitOrderBookListener listener(DSLContext database, Cache cache) {
+        return new PersistenceLimitOrderBookListener(cache, database);
     }
 
     @Override

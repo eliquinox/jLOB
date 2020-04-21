@@ -1,5 +1,6 @@
 package connectivity.fix;
 
+import com.google.inject.Inject;
 import quickfix.*;
 import quickfix.field.MsgType;
 import state.LimitOrderBook;
@@ -8,9 +9,14 @@ import java.util.concurrent.CountDownLatch;
 
 public class FixServer implements Application {
 
-    private final LimitOrderBook LIMIT_ORDER_BOOK = LimitOrderBook.empty();
+    private final LimitOrderBook LIMIT_ORDER_BOOK;
 
-    public static Runnable serverRunnable = () -> {
+    @Inject
+    public FixServer(LimitOrderBook limitOrderBook) {
+        this.LIMIT_ORDER_BOOK = limitOrderBook;
+    }
+
+    public Runnable serverRunnable = () -> {
         try {
             start();
         } catch (InterruptedException | ConfigError e) {
@@ -61,10 +67,10 @@ public class FixServer implements Application {
         }
     }
 
-    public static void start() throws ConfigError, InterruptedException {
+    public void start() throws ConfigError, InterruptedException {
         SessionSettings settings = new SessionSettings("resources/fix.server.cfg");
 
-        Application application = new FixServer();
+        Application application = new FixServer(LIMIT_ORDER_BOOK);
         MessageStoreFactory messageStoreFactory = new MemoryStoreFactory();
         LogFactory logFactory = new ScreenLogFactory( true, true, true);
         MessageFactory messageFactory = new DefaultMessageFactory();

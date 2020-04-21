@@ -1,12 +1,18 @@
 package db.persistence;
 
 import db.jooq.tables.records.MatchesRecord;
-import static db.Database.database;
 import dto.Match;
+import org.jooq.DSLContext;
 
 public class MatchesPersistence {
 
-    public static void persistMatch(Match match) {
+    private final DSLContext database;
+
+    public MatchesPersistence(DSLContext database) {
+        this.database = database;
+    }
+
+    public void persistMatch(Match match) {
         database.executeInsert(toRecord(match));
     }
 
