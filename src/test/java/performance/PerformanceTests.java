@@ -14,7 +14,7 @@ public class PerformanceTests {
     public static class MyState {
         LimitOrderBook book;
         Placement placement = new Placement(Side.BID, 100, 100);
-        Cancellation cancellation = new Cancellation(placement.getId(), 100);
+        Cancellation cancellation = new Cancellation(placement.getUuid(), 100);
 
         @Setup(Level.Invocation)
         public void doSetup() {

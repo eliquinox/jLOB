@@ -1,16 +1,19 @@
 package state;
 
+import cache.Cache;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import dto.Cancellation;
 import dto.Placement;
 import dto.Side;
-import exceptions.jLOBException;
+import exceptions.JLOBException;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
-import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectRBTreeMap;
 import it.unimi.dsi.fastutil.longs.LongComparators;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.UUID;
@@ -22,66 +25,89 @@ import static java.math.BigDecimal.valueOf;
  * L3 Limit Order Book implementation.
  *
  * Bids and offers are kept sorted in reverse natural and natural orders respectively
- * by the virtue of {@code Long2ObjectRBTreeMap<Limit>}s
+ * by virtue of {@code Long2ObjectRBTreeMap<Limit>}s
  *
  * {@code Limit}s represent price levels in an order book and wrap around a collection of {@code Placement}s.
  *
  */
 
-public class LimitOrderBook {
+@Singleton
+public class LimitOrderBook implements Serializable {
 
-    private Long2ObjectRBTreeMap<Limit> bids;
-    private Long2ObjectRBTreeMap<Limit> offers;
-    private transient Object2ObjectOpenHashMap<UUID, Placement> placements;
+    private final transient LimitOrderBookListener listener;
+    private final Long2ObjectRBTreeMap<Limit> bids;
+    private final Long2ObjectRBTreeMap<Limit> offers;
+    private final transient Object2ObjectOpenHashMap<UUID, Placement> placements;
 
-    private LimitOrderBook(){
-        this.bids = new Long2ObjectRBTreeMap<>(LongComparators.OPPOSITE_COMPARATOR);
-        this.offers = new Long2ObjectRBTreeMap<>(LongComparators.NATURAL_COMPARATOR);
-        this.placements = new Object2ObjectOpenHashMap<>();
+    @Inject
+    public LimitOrderBook(LimitOrderBookListener listener) {
+        this.listener = listener;
+        if (Cache.bookKeyExists()) {
+            LimitOrderBook limitOrderBook = Cache.getLimitOrderBook();
+            this.bids = limitOrderBook.bids;
+            this.offers = limitOrderBook.offers;
+            this.placements = new Object2ObjectOpenHashMap<>();
+            this.bids.long2ObjectEntrySet().forEach(limitEntry -> limitEntry.getValue()
+                    .getPlacements()
+                    .forEach(placement -> {
+                        this.placements.put(placement.getUuid(), placement);
+                    }));
+            this.offers.long2ObjectEntrySet().forEach(limitEntry -> limitEntry.getValue()
+                    .getPlacements()
+                    .forEach(placement -> {
+                        this.placements.put(placement.getUuid(), placement);
+                    }));
+        } else {
+            this.bids = new Long2ObjectRBTreeMap<>(LongComparators.OPPOSITE_COMPARATOR);
+            this.offers = new Long2ObjectRBTreeMap<>(LongComparators.NATURAL_COMPARATOR);
+            this.placements = new Object2ObjectOpenHashMap<>();
+        }
     }
 
     public static LimitOrderBook empty(){
-        return new LimitOrderBook();
+        return new LimitOrderBook(new DummyLimitOrderBookListener());
     }
 
     public boolean isEmpty(){
         return bids.isEmpty() && offers.isEmpty() && placements.isEmpty();
     }
 
-    public void place(Placement placement) {
-        if (placements.containsKey(placement.getId()))
+    public synchronized void place(Placement placement) {
+        if (placements.containsKey(placement.getUuid()))
             return;
         if (placement.getSide() == Side.BID)
             bid(placement);
         else
             offer(placement);
+
+        listener.onPlacement(placement, this);
     }
 
     private void bid(Placement placement) {
-        long remainingQuantity = placement.getSize();
+        Placement takerPlacement = placement.copy();
         Limit limit  = getBestLimit(offers);
-        while (remainingQuantity > 0 && limit != null && limit.getPrice() <= placement.getPrice()) {
-            remainingQuantity = limit.match(placement, placements);
+        while (takerPlacement.getSize() > 0 && limit != null && limit.getPrice() <= takerPlacement.getPrice()) {
+            takerPlacement = limit.match(takerPlacement, placements::remove, listener::onMatch);
             if (limit.isEmpty())
                 offers.remove(limit.getPrice());
             limit = getBestLimit(offers);
         }
-        if (remainingQuantity > 0) {
-            placements.put(placement.getId(), place(bids, placement));
+        if (takerPlacement.getSize() > 0) {
+            placements.put(placement.getUuid(), place(bids, takerPlacement));
         }
     }
 
     private void offer(Placement placement) {
-        long remainingQuantity = placement.getSize();
+        Placement takerPlacement = placement.copy();
         Limit limit = getBestLimit(bids);
-        while (remainingQuantity > 0 && limit != null && limit.getPrice() >= placement.getPrice()) {
-            remainingQuantity = limit.match(placement, placements);
+        while (takerPlacement.getSize() > 0 && limit != null && limit.getPrice() >= takerPlacement.getPrice()) {
+            takerPlacement = limit.match(takerPlacement, placements::remove, listener::onMatch);
             if (limit.isEmpty())
                 bids.remove(limit.getPrice());
             limit = getBestLimit(bids);
         }
-        if (remainingQuantity > 0) {
-            placements.put(placement.getId(), place(offers, placement));
+        if (takerPlacement.getSize() > 0) {
+            placements.put(takerPlacement.getUuid(), place(offers, takerPlacement));
         }
     }
 
@@ -94,16 +120,17 @@ public class LimitOrderBook {
         return level.place(placement);
     }
 
-    public void cancel(Cancellation cancellation) {
-        Placement placement = placements.get(cancellation.getId());
+    public synchronized void cancel(Cancellation cancellation) {
+        Placement placement = placements.get(cancellation.getPlacementUuid());
         if (placement == null || cancellation.getSize() > placement.getSize())
-            throw new jLOBException("Placement does not exist or cancellation size is inappropriate");
+            throw new JLOBException("Placement does not exist or cancellation size is inappropriate");
         if (cancellation.getSize() == placement.getSize()) {
             remove(placement);
-            placements.remove(placement.getId());
         } else {
             placement.reduce(cancellation.getSize());
         }
+
+        listener.onCancellation(cancellation, this);
     }
 
     private void remove(Placement placement) {
@@ -119,6 +146,8 @@ public class LimitOrderBook {
         limit.remove(placement);
         if (limit.isEmpty())
             remove(limit);
+
+        placements.remove(placement.getUuid());
     }
 
     private void remove(Limit limit) {
@@ -192,17 +221,5 @@ public class LimitOrderBook {
                 .append("bids", bids)
                 .append("offers", offers)
                 .toString();
-    }
-
-    public String bestBidOffer() {
-        StringBuilder builder = new StringBuilder();
-        builder.append("| Timestamp: " + System.nanoTime());
-        builder.append(
-                "| Best Bid Price: " + bids.firstLongKey() +
-                "| Best Bid Volume: " + bids.get(bids.firstLongKey()).getVolume() +
-                "| Best Offer Price: " + offers.firstLongKey() +
-                "| Best Offer Volume: " + offers.get(offers.firstLongKey()).getVolume()
-        );
-        return builder.toString();
     }
 }

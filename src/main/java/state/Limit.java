@@ -1,19 +1,21 @@
 package state;
 
+import dto.Match;
 import dto.Placement;
 import dto.Side;
-import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Consumer;
 
-public class Limit {
+public class Limit implements Serializable {
+
     private final Side side;
-
     private final long price;
-    private List<Placement> placements;
+    private final List<Placement> placements;
+
     public Limit(Side side, long price) {
         this.side = side;
         this.price = price;
@@ -38,21 +40,29 @@ public class Limit {
         return placement;
     }
 
-    public long match(Placement incomingPlacement, Object2ObjectOpenHashMap<UUID, Placement> placementIds){
-        while (incomingPlacement.getSize() > 0 && !placements.isEmpty()) {
-            Placement restingPlacement = placements.get(0);
-            UUID restingPlacementId = restingPlacement.getId();
-            long orderSize = restingPlacement.getSize();
-            if (orderSize > incomingPlacement.getSize()) {
-                restingPlacement.reduce(incomingPlacement.getSize());
-                incomingPlacement.reduce(incomingPlacement.getSize());
+    public List<Placement> getPlacements() {
+        return new ArrayList<>(placements);
+    }
+
+    public Placement match(Placement takerPlacement, Consumer<UUID> placementRemoveCallback,
+                           Consumer<Match> matchCallback) {
+        while (takerPlacement.getSize() > 0 && !placements.isEmpty()) {
+            Placement makerPlacement = placements.get(0);
+            UUID makerPlacementId = makerPlacement.getUuid();
+            long makerPlacementSize = makerPlacement.getSize();
+            long takerPlacementUnfilledSize = takerPlacement.getSize();
+            if (makerPlacementSize > takerPlacementUnfilledSize) {
+                makerPlacement.reduce(takerPlacementUnfilledSize);
+                takerPlacement.reduce(takerPlacementUnfilledSize);
+                matchCallback.accept(new Match(makerPlacement.getUuid(), takerPlacement.getUuid(), takerPlacementUnfilledSize));
             } else {
                 placements.remove(0);
-                incomingPlacement.reduce(orderSize);
-                placementIds.remove(restingPlacementId);
+                takerPlacement.reduce(makerPlacementSize);
+                placementRemoveCallback.accept(makerPlacementId);
+                matchCallback.accept(new Match(makerPlacement.getUuid(), takerPlacement.getUuid(), makerPlacementSize));
             }
         }
-        return incomingPlacement.getSize();
+        return takerPlacement;
     }
 
     public long getVolume(){

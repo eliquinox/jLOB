@@ -3,21 +3,24 @@ package state;
 import dto.Cancellation;
 import dto.Placement;
 import dto.Side;
-import exceptions.jLOBException;
+import exceptions.JLOBException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
 
 
 public class LimitOrderBookTest {
 
     private LimitOrderBook book;
+    private LimitOrderBookListener listener;
 
     @BeforeEach
     protected void setUp() {
-        book = LimitOrderBook.empty();
+        listener = mock(LimitOrderBookListener.class);
+        book = new LimitOrderBook(listener);
 
         book.place(new Placement(Side.OFFER, 1300, 245));
         book.place(new Placement(Side.OFFER, 1200, 25));
@@ -111,10 +114,10 @@ public class LimitOrderBookTest {
     @Test
     public void testCancellationAmountGreaterThanPlacement() {
         Placement placement = new Placement(Side.BID, 100, 100);
-        Cancellation cancellation = new Cancellation(placement.getId(), 200);
+        Cancellation cancellation = new Cancellation(placement.getUuid(), 200);
         book.place(placement);
         assertThrows(
-                jLOBException.class,
+                JLOBException.class,
                 () -> book.cancel(cancellation),
                 "Placement does not exist or cancellation size is inappropriate"
         );

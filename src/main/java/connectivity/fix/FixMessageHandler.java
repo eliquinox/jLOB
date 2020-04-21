@@ -62,7 +62,7 @@ public enum FixMessageHandler {
             long price = (long) message.getDouble(Price.FIELD);
             long amount = (long) message.getDouble(OrderQty.FIELD);
             Placement placement = new Placement(side, price, amount);
-            String placementId = "" + placement.getId();
+            String placementId = "" + placement.getUuid();
             BigDecimal averageSalePrice = limitOrderBook.getAverageSalePrice(amount);
             limitOrderBook.place(placement);
             char ordStatus = averageSalePrice.equals(BigDecimal.ZERO) ? OrdStatus.NEW : OrdStatus.FILLED;
