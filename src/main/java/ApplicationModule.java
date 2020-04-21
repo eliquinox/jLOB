@@ -66,8 +66,8 @@ public class ApplicationModule extends AbstractModule {
     }
 
     @Provides
-    public LimitOrderBookListener listener(Cache cache) {
-        return new PersistenceLimitOrderBookListener(cache);
+    public LimitOrderBookListener listener(DSLContext database, Cache cache) {
+        return new PersistenceLimitOrderBookListener(cache, database);
     }
 
     @Override
