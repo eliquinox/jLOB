@@ -1,5 +1,6 @@
 package state;
 
+import cache.Cache;
 import dto.Cancellation;
 import dto.Match;
 import dto.Placement;
@@ -29,7 +30,8 @@ public class LimitOrderBookListenerTest {
     @BeforeEach
     protected void setUp() {
         listener = mock(LimitOrderBookListener.class);
-        book = new LimitOrderBook(listener);
+        Cache cache = mock(Cache.class);
+        book = new LimitOrderBook(listener, cache);
     }
 
     @Test
