@@ -10,7 +10,6 @@ import state.LimitOrderBook;
 
 public class Cache {
 
-    private final RedissonClient cache;
     private final RBucket<LimitOrderBook> limitOrderBookBucket;
 
     @Inject
@@ -19,12 +18,8 @@ public class Cache {
         config.useSingleServer()
                 .setAddress("redis://" + redisConfig.getHost() + ":" + redisConfig.getPort());
 
-        this.cache = Redisson.create(config);
+        RedissonClient cache = Redisson.create(config);
         this.limitOrderBookBucket = cache.getBucket("book");
-    }
-
-    public boolean isConfigured() {
-        return cache != null && limitOrderBookBucket != null;
     }
 
     public void cacheLimitOrderBook(LimitOrderBook limitOrderBook) {
@@ -36,6 +31,6 @@ public class Cache {
     }
 
     public boolean bookKeyExists() {
-        return isConfigured() && limitOrderBookBucket.isExists();
+        return limitOrderBookBucket.isExists();
     }
 }

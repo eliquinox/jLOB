@@ -9,6 +9,10 @@ import java.util.UUID;
 
 public class FixClient implements Application {
 
+    /**
+     * Example FIX client application
+     */
+
     private volatile SessionID sessionID;
 
     public static Runnable clientRunnable = () -> {
@@ -56,7 +60,7 @@ public class FixClient implements Application {
     }
 
     public static void start() throws ConfigError, SessionNotFound, InterruptedException {
-        SessionSettings settings = new SessionSettings("resources/fix.client.cfg");
+        SessionSettings settings = new SessionSettings("fix.client.cfg");
 
         FixClient application = new FixClient();
         MessageStoreFactory messageStoreFactory = new MemoryStoreFactory();

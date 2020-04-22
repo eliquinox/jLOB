@@ -10,7 +10,6 @@ import java.io.IOException;
 
 public class Config {
 
-    private String protocol;
     private DatabaseConfig database;
     private RedisConfig redis;
 
@@ -24,13 +23,8 @@ public class Config {
     public Config() {}
 
     private void construct(Config config) {
-        this.protocol = config.getProtocol();
         this.database = config.getDatabaseConfig();
         this.redis = config.getRedisConfig();
-    }
-
-    public String getProtocol() {
-        return protocol;
     }
 
     public DatabaseConfig getDatabaseConfig() {
@@ -39,10 +33,6 @@ public class Config {
 
     public RedisConfig getRedisConfig() {
         return redis;
-    }
-
-    public void setProtocol(String protocol) {
-        this.protocol = protocol;
     }
 
     public void setDatabase(DatabaseConfig database) {

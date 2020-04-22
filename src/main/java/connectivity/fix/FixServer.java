@@ -68,7 +68,7 @@ public class FixServer implements Application {
     }
 
     public void start() throws ConfigError, InterruptedException {
-        SessionSettings settings = new SessionSettings("resources/fix.server.cfg");
+        SessionSettings settings = new SessionSettings("fix.server.cfg");
 
         Application application = new FixServer(LIMIT_ORDER_BOOK);
         MessageStoreFactory messageStoreFactory = new MemoryStoreFactory();

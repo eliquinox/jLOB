@@ -59,10 +59,13 @@ public class ApplicationModule extends AbstractModule {
     }
 
     @Provides
-    public ServerRunner serverRunner(Config config, LimitOrderBook limitOrderBook) {
-        return config.getProtocol().equals("http") ?
-                new LimitOrderBookHttpServerRunner(limitOrderBook) :
-                new LimitOrderBookFixServerRunner(limitOrderBook);
+    public LimitOrderBookHttpServerRunner httpServerRunner(LimitOrderBook limitOrderBook) {
+        return new LimitOrderBookHttpServerRunner(limitOrderBook);
+    }
+
+    @Provides
+    public LimitOrderBookFixServerRunner fixServerRunner(LimitOrderBook limitOrderBook) {
+        return new LimitOrderBookFixServerRunner(limitOrderBook);
     }
 
     @Provides
