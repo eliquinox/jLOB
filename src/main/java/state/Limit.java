@@ -5,12 +5,10 @@ import dto.Placement;
 import dto.Side;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Consumer;
 
-public class Limit implements Serializable {
+public class Limit implements Serializable, Iterable<Placement> {
 
     private final Side side;
     private final long price;
@@ -35,13 +33,8 @@ public class Limit implements Serializable {
         return placement;
     }
 
-    public Placement remove(Placement placement){
+    public void remove(Placement placement){
         placements.remove(placement);
-        return placement;
-    }
-
-    public List<Placement> getPlacements() {
-        return new ArrayList<>(placements);
     }
 
     public Placement match(Placement takerPlacement, Consumer<UUID> placementRemoveCallback,
@@ -86,4 +79,18 @@ public class Limit implements Serializable {
                 '}';
     }
 
+    @Override
+    public Iterator<Placement> iterator() {
+        return placements.iterator();
+    }
+
+    @Override
+    public void forEach(Consumer<? super Placement> action) {
+        placements.forEach(action);
+    }
+
+    @Override
+    public Spliterator<Placement> spliterator() {
+        return placements.spliterator();
+    }
 }

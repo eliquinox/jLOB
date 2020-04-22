@@ -2,11 +2,13 @@ package state;
 
 import cache.Cache;
 import dto.Cancellation;
-import dto.Placement;
+import static dto.Placement.placement;
 import dto.Side;
 import exceptions.JLOBException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -23,18 +25,50 @@ public class LimitOrderBookTest {
         Cache cache = mock(Cache.class);
         book = new LimitOrderBook(listener, cache);
 
-        book.place(new Placement(Side.OFFER, 1300, 245));
-        book.place(new Placement(Side.OFFER, 1200, 25));
-        book.place(new Placement(Side.OFFER, 1100, 125));
+        book.place(placement()
+                .withSide(Side.OFFER)
+                .withPrice(1300)
+                .withSize(245)
+                .build());
 
-        book.place(new Placement(Side.BID, 1000, 100));
-        book.place(new Placement(Side.BID, 900, 75));
-        book.place(new Placement(Side.BID, 800, 125));
+        book.place(placement()
+                .withSide(Side.OFFER)
+                .withPrice(1200)
+                .withSize(25)
+                .build());
+
+        book.place(placement()
+                .withSide(Side.OFFER)
+                .withPrice(1100)
+                .withSize(125)
+                .build());
+
+        book.place(placement()
+                .withSide(Side.BID)
+                .withPrice(1000)
+                .withSize(100)
+                .build());
+
+        book.place(placement()
+                .withSide(Side.BID)
+                .withPrice(900)
+                .withSize(75)
+                .build());
+
+        book.place(placement()
+                .withSide(Side.BID)
+                .withPrice(800)
+                .withSize(125)
+                .build());
     }
 
     @Test
     public void testBuy() {
-        book.place(new Placement(Side.BID, 1000, 100));
+        book.place(placement()
+                .withSide(Side.BID)
+                .withPrice(1000)
+                .withSize(100)
+                .build());
         assertEquals(1000, book.getBestBid());
         assertEquals(1100, book.getBestOffer());
         assertEquals(200, book.getBestBidAmount());
@@ -44,7 +78,11 @@ public class LimitOrderBookTest {
 
     @Test
     public void testBuyCross() {
-        book.place(new Placement(Side.BID, 1100, 100));
+        book.place(placement()
+                .withSide(Side.BID)
+                .withPrice(1100)
+                .withSize(100)
+                .build());
         assertEquals(1000, book.getBestBid());
         assertEquals(1100, book.getBestOffer());
         assertEquals(100, book.getBestBidAmount());
@@ -54,7 +92,11 @@ public class LimitOrderBookTest {
 
     @Test
     public void testBestBuyFill() {
-        book.place(new Placement(Side.BID, 1100, 125));
+        book.place(placement()
+                .withSide(Side.BID)
+                .withPrice(1100)
+                .withSize(125)
+                .build());
         assertEquals(1000, book.getBestBid());
         assertEquals(1200, book.getBestOffer());
         assertEquals(25, book.getBestOfferAmount());
@@ -64,7 +106,11 @@ public class LimitOrderBookTest {
 
     @Test
     public void testBestBuyOverfill() {
-        book.place(new Placement(Side.BID, 1100, 225));
+        book.place(placement()
+                .withSide(Side.BID)
+                .withPrice(1100)
+                .withSize(225)
+                .build());
         assertEquals(1100, book.getBestBid());
         assertEquals(1200, book.getBestOffer());
         assertEquals(100, book.getBestBidAmount());
@@ -74,7 +120,11 @@ public class LimitOrderBookTest {
 
     @Test
     public void testSell() {
-        book.place(new Placement(Side.OFFER, 1100, 100));
+        book.place(placement()
+                .withSide(Side.OFFER)
+                .withPrice(1100)
+                .withSize(100)
+                .build());
         assertEquals(1000, book.getBestBid());
         assertEquals(1100, book.getBestOffer());
         assertEquals(100, book.getBestBidAmount());
@@ -84,7 +134,11 @@ public class LimitOrderBookTest {
 
     @Test
     public void testBestSellCross() {
-        book.place(new Placement(Side.OFFER, 1000, 50));
+        book.place(placement()
+                .withSide(Side.OFFER)
+                .withPrice(1000)
+                .withSize(50)
+                .build());
         assertEquals(1000, book.getBestBid());
         assertEquals(1100, book.getBestOffer());
         assertEquals(50, book.getBestBidAmount());
@@ -94,7 +148,11 @@ public class LimitOrderBookTest {
 
     @Test
     public void testBestSellFill() {
-        book.place(new Placement(Side.OFFER, 1000, 100));
+        book.place(placement()
+                .withSide(Side.OFFER)
+                .withPrice(1000)
+                .withSize(100)
+                .build());
         assertEquals(900, book.getBestBid());
         assertEquals(1100, book.getBestOffer());
         assertEquals(75, book.getBestBidAmount());
@@ -104,7 +162,11 @@ public class LimitOrderBookTest {
 
     @Test
     public void testBestSellOverFill() {
-        book.place(new Placement(Side.OFFER, 1000, 400));
+        book.place(placement()
+                .withSide(Side.OFFER)
+                .withPrice(1000)
+                .withSize(400)
+                .build());
         assertEquals(900, book.getBestBid());
         assertEquals(1000, book.getBestOffer());
         assertEquals(75, book.getBestBidAmount());
@@ -114,8 +176,28 @@ public class LimitOrderBookTest {
 
     @Test
     public void testCancellationAmountGreaterThanPlacement() {
-        Placement placement = new Placement(Side.BID, 100, 100);
+        final var placement = placement()
+                .withSide(Side.BID)
+                .withPrice(100)
+                .withSize(100)
+                .build();
         Cancellation cancellation = new Cancellation(placement.getUuid(), 200);
+        book.place(placement);
+        assertThrows(
+                JLOBException.class,
+                () -> book.cancel(cancellation),
+                "Placement does not exist or cancellation size is inappropriate"
+        );
+    }
+
+    @Test
+    public void testCancellationOfNonexistentPlacement() {
+        final var placement = placement()
+                .withSide(Side.BID)
+                .withPrice(100)
+                .withSize(100)
+                .build();
+        Cancellation cancellation = new Cancellation(UUID.randomUUID(), 200);
         book.place(placement);
         assertThrows(
                 JLOBException.class,

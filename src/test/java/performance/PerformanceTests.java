@@ -1,6 +1,5 @@
 package performance;
 
-import cache.Cache;
 import dto.Cancellation;
 import dto.Placement;
 import dto.Side;
@@ -9,20 +8,21 @@ import state.LimitOrderBook;
 
 import java.util.concurrent.TimeUnit;
 
-import static org.mockito.Mockito.mock;
+import static dto.Placement.placement;
 
 public class PerformanceTests {
 
     @State(Scope.Thread)
     public static class MyState {
         LimitOrderBook book;
-        Placement placement = new Placement(Side.BID, 100, 100);
-        Cancellation cancellation = new Cancellation(placement.getUuid(), 100);
+        Placement bidPlacement = placement().withSide(Side.BID).withPrice(100).withSize(100).build();
+        Placement offerPlacement = placement().withSide(Side.OFFER).withPrice(100).withSize(100).build();
+        Cancellation cancellation = new Cancellation(bidPlacement.getUuid(), 100);
 
         @Setup(Level.Invocation)
         public void doSetup() {
             book = LimitOrderBook.empty();
-            book.place(placement);
+            book.place(bidPlacement);
         }
 
     }
@@ -33,7 +33,7 @@ public class PerformanceTests {
          * Benchmark                       Mode  Cnt    Score   Error  Units
          * PerformanceTests.testPlacement  avgt   25  127.061 ± 3.260  ns/op
          */
-        state.book.place(state.placement);
+        state.book.place(state.bidPlacement);
     }
 
     @Benchmark @BenchmarkMode(Mode.AverageTime) @OutputTimeUnit(TimeUnit.NANOSECONDS)
@@ -51,6 +51,6 @@ public class PerformanceTests {
          * Benchmark                   Mode  Cnt    Score   Error  Units
          * PerformanceTests.testMatch  avgt   25  122.326 ± 2.526  ns/op
          */
-        state.book.place(new Placement(Side.OFFER, 100, 100));
+        state.book.place(state.offerPlacement);
     }
 }

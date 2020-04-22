@@ -9,6 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
+import static dto.Placement.placement;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
@@ -37,7 +38,12 @@ public class LimitOrderBookListenerTest {
     @Test
     void shouldCallOnPlacementWhenPlacing() {
         // when
-        Placement placement = new Placement(Side.BID, 1000, 100);
+        Placement placement = placement()
+                .withSide(Side.BID)
+                .withPrice(1000)
+                .withSize(100)
+                .build();
+
         book.place(placement);
 
         ArgumentCaptor<Placement> placementArgumentCaptor = ArgumentCaptor.forClass(Placement.class);
@@ -57,7 +63,12 @@ public class LimitOrderBookListenerTest {
     @Test
     void shouldCallOnCancelWhenCancelling() {
         // when
-        Placement placement = new Placement(Side.BID, 1000, 100);
+        Placement placement = placement()
+                .withSide(Side.BID)
+                .withPrice(1000)
+                .withSize(100)
+                .build();
+
         book.place(placement);
         Cancellation cancellation = new Cancellation(placement.getUuid(), 100);
         book.cancel(cancellation);
@@ -88,9 +99,20 @@ public class LimitOrderBookListenerTest {
     @Test
     void shouldCallOnPlacementAndOnMatchWhenMatching() {
         // when
-        Placement makerPlacement = new Placement(Side.BID, 1000, 100);
+        Placement makerPlacement = placement()
+                .withSide(Side.BID)
+                .withPrice(1000)
+                .withSize(100)
+                .build();
+
         book.place(makerPlacement);
-        Placement takerPlacement = new Placement(Side.OFFER, 1000, 50);
+
+        Placement takerPlacement = placement()
+                .withSide(Side.OFFER)
+                .withPrice(1000)
+                .withSize(50)
+                .build();
+
         book.place(takerPlacement);
 
         ArgumentCaptor<Placement> placementArgumentCaptor = ArgumentCaptor.forClass(Placement.class);
@@ -116,10 +138,29 @@ public class LimitOrderBookListenerTest {
     @Test
     void shouldCallOnMatchMultipleTimesWhenMatchingAgainstMultipleMakers() {
         // when
-        Placement makerPlacement1 = new Placement(Side.BID, 1000, 100);
-        Placement makerPlacement2 = new Placement(Side.BID, 1000, 50);
-        Placement makerPlacement3 = new Placement(Side.BID, 1000, 25);
-        Placement takerPlacement = new Placement(Side.OFFER, 1000, 175);
+        Placement makerPlacement1 = placement()
+                .withSide(Side.BID)
+                .withPrice(1000)
+                .withSize(100)
+                .build();
+
+        Placement makerPlacement2 = placement()
+                .withSide(Side.BID)
+                .withPrice(1000)
+                .withSize(50)
+                .build();
+
+        Placement makerPlacement3 = placement()
+                .withSide(Side.BID)
+                .withPrice(1000)
+                .withSize(25)
+                .build();
+
+        Placement takerPlacement = placement()
+                .withSide(Side.OFFER)
+                .withPrice(1000)
+                .withSize(175)
+                .build();
 
         book.place(makerPlacement1);
         book.place(makerPlacement2);
@@ -150,10 +191,29 @@ public class LimitOrderBookListenerTest {
     @Test
     void shouldCallOnMatchMultipleTimesWhenTakeOverflows() {
         // when
-        Placement makerPlacement1 = new Placement(Side.BID, 1000, 100);
-        Placement makerPlacement2 = new Placement(Side.BID, 1000, 50);
-        Placement makerPlacement3 = new Placement(Side.BID, 1000, 25);
-        Placement takerPlacement = new Placement(Side.OFFER, 1000, 200);
+        Placement makerPlacement1 = placement()
+                .withSide(Side.BID)
+                .withPrice(1000)
+                .withSize(100)
+                .build();
+
+        Placement makerPlacement2 = placement()
+                .withSide(Side.BID)
+                .withPrice(1000)
+                .withSize(50)
+                .build();
+
+        Placement makerPlacement3 = placement()
+                .withSide(Side.BID)
+                .withPrice(1000)
+                .withSize(25)
+                .build();
+
+        Placement takerPlacement = placement()
+                .withSide(Side.OFFER)
+                .withPrice(1000)
+                .withSize(200)
+                .build();
 
         book.place(makerPlacement1);
         book.place(makerPlacement2);

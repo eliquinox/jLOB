@@ -12,6 +12,7 @@ import state.LimitOrderBook;
 import java.math.BigDecimal;
 import java.util.Map;
 
+import static dto.Placement.placement;
 import static java.util.Arrays.stream;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
@@ -61,7 +62,7 @@ public enum FixMessageHandler {
             Side side = message.getChar(quickfix.field.Side.FIELD) == '1' ? Side.BID : Side.OFFER;
             long price = (long) message.getDouble(Price.FIELD);
             long amount = (long) message.getDouble(OrderQty.FIELD);
-            Placement placement = new Placement(side, price, amount);
+            Placement placement = placement().withSide(side).withPrice(price).withSize(amount).build();
             String placementId = "" + placement.getUuid();
             BigDecimal averageSalePrice = limitOrderBook.getAverageSalePrice(amount);
             limitOrderBook.place(placement);

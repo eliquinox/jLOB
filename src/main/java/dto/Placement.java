@@ -4,32 +4,26 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.Optional;
 import java.util.UUID;
+
+import static java.util.Optional.empty;
+import static java.util.Optional.of;
 
 public class Placement implements Serializable {
 
-    private UUID uuid = UUID.randomUUID();
+    private final UUID uuid;
     private final Instant timestamp;
     private final Side side;
     private final long price;
     private long size;
 
-    public Placement(Side side, long price, long size) {
-        this.timestamp = Instant.now();
-        this.side = side;
-        this.price = price;
-        this.size = size;
-    }
-
-    public Placement(String side, long price, long size) {
-        this.timestamp = Instant.now();
-        this.side = Side.fromString(side);
-        this.price = price;
-        this.size = size;
+    public static Builder placement() {
+        return new Builder();
     }
 
     public Placement copy() {
-        return builder()
+        return placement()
                 .withUuid(this.uuid)
                 .withInstant(this.timestamp)
                 .withSide(this.side)
@@ -38,52 +32,48 @@ public class Placement implements Serializable {
                 .build();
     }
 
-    public static Builder builder() {
-        return new Builder();
-    }
-
     private Placement(Builder builder) {
-        this.uuid = builder.uuid;
-        this.timestamp = builder.timestamp;
+        this.uuid = builder.uuid.orElse(UUID.randomUUID());
+        this.timestamp = builder.timestamp.orElse(Instant.now());
         this.side = builder.side;
         this.price = builder.price;
         this.size = builder.size;
     }
 
-    private static class Builder {
+    public static class Builder {
 
-        private UUID uuid;
-        private Instant timestamp;
+        private Optional<UUID> uuid = empty();
+        private Optional<Instant> timestamp = empty();
         private Side side;
         private long price;
         private long size;
 
-        Builder withUuid(UUID uuid) {
-            this.uuid = uuid;
+        private Builder withUuid(UUID uuid) {
+            this.uuid = of(uuid);
             return this;
         }
 
-        Builder withInstant(Instant timestamp) {
-            this.timestamp = timestamp;
+        private Builder withInstant(Instant timestamp) {
+            this.timestamp = of(timestamp);
             return this;
         }
 
-        Builder withSide(Side side) {
+        public Builder withSide(Side side) {
             this.side = side;
             return this;
         }
 
-        Builder withPrice(long price) {
+        public Builder withPrice(long price) {
             this.price = price;
             return this;
         }
 
-        Builder withSize(long size) {
+        public Builder withSize(long size) {
             this.size = size;
             return this;
         }
 
-        Placement build() {
+        public Placement build() {
             return new Placement(this);
         }
     }

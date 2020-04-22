@@ -16,6 +16,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Stream;
 
@@ -47,16 +48,16 @@ public class LimitOrderBook implements Serializable {
             this.bids = limitOrderBook.bids;
             this.offers = limitOrderBook.offers;
             this.placements = new Object2ObjectOpenHashMap<>();
-            this.bids.long2ObjectEntrySet().forEach(limitEntry -> limitEntry.getValue()
-                    .getPlacements()
-                    .forEach(placement -> {
-                        this.placements.put(placement.getUuid(), placement);
-                    }));
-            this.offers.long2ObjectEntrySet().forEach(limitEntry -> limitEntry.getValue()
-                    .getPlacements()
-                    .forEach(placement -> {
-                        this.placements.put(placement.getUuid(), placement);
-                    }));
+            this.bids.long2ObjectEntrySet().stream()
+                    .map(Map.Entry::getValue)
+                    .forEach(limit -> limit
+                        .forEach(placement -> this.placements.put(placement.getUuid(), placement)));
+
+            this.offers.long2ObjectEntrySet().stream()
+                    .map(Map.Entry::getValue)
+                    .forEach(limit -> limit
+                        .forEach(placement -> this.placements.put(placement.getUuid(), placement)));
+
         } else {
             this.bids = new Long2ObjectRBTreeMap<>(LongComparators.OPPOSITE_COMPARATOR);
             this.offers = new Long2ObjectRBTreeMap<>(LongComparators.NATURAL_COMPARATOR);
