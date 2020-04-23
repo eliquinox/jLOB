@@ -52,15 +52,11 @@ dependencies {
     jooqRuntime group: 'org.postgresql', name: 'postgresql', version: '42.2.12'
 }
 
-task bookHttpApp(type: JavaExec) {
+task runBook(type: JavaExec) {
     classpath sourceSets.main.runtimeClasspath
-    main = "LimitOrderBookHttpApplication"
-}
-
-task bookFixApp(type: JavaExec) {
-    classpath sourceSets.main.runtimeClasspath
-    main = "LimitOrderBookFixApplication"
-    workingDir(new File("$projectDir/src/main").toString())
+    main = "Application"
+    args = ["config.local.yaml"]
+    workingDir(new File("$projectDir/src/main/resources").toString())
 }
 
 Map<String, String> loadYaml() {
@@ -129,3 +125,4 @@ task cleanGeneratedJooqFiles(type: Delete) {
 }
 
 tasks.clean.dependsOn(tasks.cleanGeneratedJooqFiles)
+tasks.runBook.dependsOn(tasks.generateJLobJooqSchemaSource)

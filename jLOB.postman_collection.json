@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "b61d8d5b-55bf-47dd-8755-adcd20cb7a8f",
+		"_postman_id": "b93b741b-1438-4445-8638-a71e15c2046a",
 		"name": "jLOB",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -31,7 +31,12 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"side\": \"bid\",\n\t\"price\": 100,\n\t\"size\": 1000\n}"
+					"raw": "{\n\t\"side\": \"offer\",\n\t\"price\": 100,\n\t\"size\": 10000\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
 				},
 				"url": {
 					"raw": "http://localhost:4567/book",
@@ -61,7 +66,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"id\": 1,\n\t\"size\": 100\n}",
+					"raw": "{\n\t\"id\": \"e08f8a3b-f38b-4a72-a2a9-2ae0cb8c9d1f\",\n\t\"size\": 20\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -87,8 +92,25 @@
 			"request": {
 				"method": "POST",
 				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"action\": \"bid\",\n\t\"size\": 100\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
 				"url": {
-					"raw": ""
+					"raw": "http://localhost:4567/vwap",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4567",
+					"path": [
+						"vwap"
+					]
 				}
 			},
 			"response": []

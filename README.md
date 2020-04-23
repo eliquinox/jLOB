@@ -1,15 +1,41 @@
 # _jLOB_
-## L3 Order Book and Matching Engine Implementation in Java
+## L3 Order Book and Matching Engine
 
-jLOB has all the basic capabilities of a functional exchange. It currently supports HTTP protocol as well as basic FIX protocol communication.
+jLOB has all the basic capabilities of a functional exchange. 
+Custom business logic can be defined by implementing orderbook listeners. 
+It currently supports HTTP and FIX protocol communication.
+
+### Configuration
+
+`PersistenceLimitOrderBookListener.java` defines logic for storing orderbook events and caching orderbook state.
+Events are stored in PostgreSQL and orderbook state is cached in Redis. Reference `config.local.yaml` defines parameters 
+for local execution of the application:
+
+```
+database:
+  host: 127.0.0.1
+  name: jlob
+  port: 5432
+  username: postgres
+  password: postgres
+
+redis:
+  host: 127.0.0.1
+  port: 6379
+```
+
+Create and start these dependencies accordingly.
+
+Reference FIX server and FIX client configurations are provided in `fix.server.cfg` and `fix.client.cfg` accordingly. 
 
 ### Quickstart
 
 To start the service:
 
-`gradle bookHttpApp`
+`gradle runBook`
 
-This will start the orderbook service on `http://localhost:4567`.
+The task will create needed JOOQ classes and run DB migrations, creating needed tables.
+It will then start HTTP and FIX servers on `http://127.0.0.1:4567` and `tcp://127.0.0.1:9877`.
 
 Import `jLOB.postman_collection.json` into [Postman](https://www.getpostman.com/) to start exploring the API.
 
@@ -29,11 +55,14 @@ Retrieves the current state of the orderbook:
             "price": 90,
             "placements": [
                 {
-                    "id": 1,
-                    "timestamp": 895353426935206,
+                    "uuid": "77b778eb-4304-41f8-9a75-3113c459907a",
+                    "timestamp": {
+                        "seconds": 1587682193,
+                        "nanos": 398559000
+                    },
                     "side": "BID",
                     "price": 90,
-                    "size": 100000
+                    "size": 100
                 }
             ]
         }
@@ -44,11 +73,14 @@ Retrieves the current state of the orderbook:
             "price": 100,
             "placements": [
                 {
-                    "id": 2,
-                    "timestamp": 895361264216599,
+                    "uuid": "6a6a90cc-3f7d-4514-b70e-dca1e1706415",
+                    "timestamp": {
+                        "seconds": 1587682203,
+                        "nanos": 9953000
+                    },
                     "side": "OFFER",
                     "price": 100,
-                    "size": 100000
+                    "size": 100
                 }
             ]
         }
@@ -74,11 +106,14 @@ _Example Response:_
 
 ```
 {
-    "id": 1,
-    "timestamp": 895361264216599,
+    "uuid": "e08f8a3b-f38b-4a72-a2a9-2ae0cb8c9d1f",
+    "timestamp": {
+        "seconds": 1587682282,
+        "nanos": 259523000
+    },
     "side": "OFFER",
     "price": 100,
-    "size": 100000
+    "size": 10000
 }
 ```
 
@@ -90,7 +125,7 @@ _Example Request_:
 
 ```
 {
-    "id": 1,
+    "id": "e08f8a3b-f38b-4a72-a2a9-2ae0cb8c9d1f",
     "size": 20
 }
 ```
@@ -99,8 +134,11 @@ _Example Response_:
 
 ```
 {
-    "id": 1,
-    "timestamp": 896055004211197,
+    "placementUuid": "e08f8a3b-f38b-4a72-a2a9-2ae0cb8c9d1f",
+    "timestamp": {
+        "seconds": 1587682397,
+        "nanos": 728419000
+    },
     "size": 20
 }
 ```
@@ -122,12 +160,6 @@ _Example Response:_
 
 ```
 {
-    "price": 90.0
+    "price": 100.00
 }
 ```
-
-To start FIX protocol demo, run:
-
-`gradle bookFixApp`
-
-The client process will exchange heartbeat messages with server process, then will send an order, followed by a market data request, to which the server will reply with an execution report.
