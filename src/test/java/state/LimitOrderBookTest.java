@@ -2,26 +2,31 @@ package state;
 
 import cache.Cache;
 import dto.Cancellation;
-import static dto.Placement.placement;
+import dto.Match;
+import static dto.Match.match;
 import dto.Side;
 import exceptions.JLOBException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 
 import java.util.UUID;
 
+import static dto.Placement.placement;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.mock;
-
+import static org.mockito.Mockito.*;
 
 public class LimitOrderBookTest {
 
     private LimitOrderBook book;
+    private LimitOrderBookListener listener;
 
     @BeforeEach
     protected void setUp() {
-        LimitOrderBookListener listener = mock(LimitOrderBookListener.class);
+        this.listener = mock(LimitOrderBookListener.class);
         Cache cache = mock(Cache.class);
         book = new LimitOrderBook(listener, cache);
 
@@ -246,5 +251,64 @@ public class LimitOrderBookTest {
     @Test
     public void testAverageSaleZero(){
         assertEquals(0., book.getAverageSalePrice(0).doubleValue());
+    }
+
+    @Test
+    public void shouldExecuteOnFifoBasis() {
+        var placement1 = placement()
+                .withSide(Side.BID)
+                .withPrice(1050)
+                .withSize(100)
+                .build();
+
+        var placement2 = placement()
+                .withSide(Side.BID)
+                .withPrice(1050)
+                .withSize(200)
+                .build();
+
+        var placement3 = placement()
+                .withSide(Side.BID)
+                .withPrice(1050)
+                .withSize(50)
+                .build();
+
+        var placement4 = placement()
+                .withSide(Side.OFFER)
+                .withPrice(1050)
+                .withSize(1000)
+                .build();
+
+        book.place(placement1);
+        book.place(placement2);
+        book.place(placement3);
+        book.place(placement4);
+
+        ArgumentCaptor<Match> matchArgumentCaptor = ArgumentCaptor.forClass(Match.class);
+        verify(listener, times(3)).onMatch(matchArgumentCaptor.capture());
+        var matches = matchArgumentCaptor.getAllValues();
+
+        var match1 = match()
+                .withTimestamp(matches.get(0).getTimestamp())
+                .withMakerPlacementUuid(placement1.getUuid())
+                .withTakerPlacementUuid(placement4.getUuid())
+                .withSize(placement1.getSize())
+                .build();
+
+        var match2 = match()
+                .withTimestamp(matches.get(1).getTimestamp())
+                .withMakerPlacementUuid(placement2.getUuid())
+                .withTakerPlacementUuid(placement4.getUuid())
+                .withSize(placement2.getSize())
+                .build();
+
+        var match3 = match()
+                .withTimestamp(matches.get(2).getTimestamp())
+                .withMakerPlacementUuid(placement3.getUuid())
+                .withTakerPlacementUuid(placement4.getUuid())
+                .withSize(placement3.getSize())
+                .build();
+
+        assertThat(matches, contains(match1, match2, match3));
     }
 }

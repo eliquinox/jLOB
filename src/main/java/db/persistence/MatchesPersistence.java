@@ -18,8 +18,8 @@ public class MatchesPersistence {
 
     public static MatchesRecord toRecord(Match match) {
         return new MatchesRecord(
-                match.getMakerPlacementId(),
-                match.getTakerPlacementId(),
+                match.getMakerPlacementUuid(),
+                match.getTakerPlacementUuid(),
                 match.getTimestamp(),
                 match.getSize()
         );

@@ -23,8 +23,8 @@ public class LimitOrderBookListenerTest {
     private LimitOrderBookListener listener;
 
     private static boolean matchEqualButForTimestamp(Match expected, Match actual) {
-        return expected.getMakerPlacementId().equals(actual.getMakerPlacementId())
-                && expected.getTakerPlacementId().equals(actual.getTakerPlacementId())
+        return expected.getMakerPlacementUuid().equals(actual.getMakerPlacementUuid())
+                && expected.getTakerPlacementUuid().equals(actual.getTakerPlacementUuid())
                 && expected.getSize() == actual.getSize();
     }
 
@@ -130,8 +130,8 @@ public class LimitOrderBookListenerTest {
 
         // then
         assertThat(placementArguments, containsInAnyOrder(makerPlacement, takerPlacement));
-        assertEquals(matchArgument.getMakerPlacementId(), match.getMakerPlacementId());
-        assertEquals(matchArgument.getTakerPlacementId(), match.getTakerPlacementId());
+        assertEquals(matchArgument.getMakerPlacementUuid(), match.getMakerPlacementUuid());
+        assertEquals(matchArgument.getTakerPlacementUuid(), match.getTakerPlacementUuid());
         assertEquals(matchArgument.getSize(), match.getSize());
     }
 
