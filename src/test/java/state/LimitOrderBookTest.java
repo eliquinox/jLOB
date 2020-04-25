@@ -247,5 +247,4 @@ public class LimitOrderBookTest {
     public void testAverageSaleZero(){
         assertEquals(0., book.getAverageSalePrice(0).doubleValue());
     }
-
 }

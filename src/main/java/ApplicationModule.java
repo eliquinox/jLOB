@@ -1,6 +1,7 @@
 import cache.Cache;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
+import com.google.inject.Singleton;
 import config.Config;
 import config.DatabaseConfig;
 import config.RedisConfig;
@@ -15,6 +16,8 @@ import state.PersistenceLimitOrderBookListener;
 
 import java.io.IOException;
 
+import static config.Config.fromPath;
+
 public class ApplicationModule extends AbstractModule {
 
     private final String configPath;
@@ -25,7 +28,7 @@ public class ApplicationModule extends AbstractModule {
 
     @Provides
     public Config config() throws IOException {
-        return new Config(configPath);
+        return fromPath(configPath);
     }
 
     @Provides
@@ -34,6 +37,7 @@ public class ApplicationModule extends AbstractModule {
     }
 
     @Provides
+    @Singleton
     public DSLContext dslContext(DatabaseConfig databaseConfig) {
         return DSL.using(
                 databaseConfig.getUrl(),

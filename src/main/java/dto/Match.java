@@ -1,5 +1,7 @@
 package dto;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
 import java.time.Instant;
 import java.util.Objects;
 import java.util.UUID;
@@ -31,5 +33,15 @@ public class Match {
 
     public long getSize() {
         return size;
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this)
+                .append("makerPlacementId", makerPlacementId)
+                .append("takerPlacementId", takerPlacementId)
+                .append("timestamp", timestamp)
+                .append("size", size)
+                .toString();
     }
 }

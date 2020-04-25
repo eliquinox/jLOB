@@ -12,6 +12,7 @@ import spark.Route;
 import state.LimitOrderBook;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.Map;
 
 public class LimitOrderBookApi {
@@ -25,6 +26,7 @@ public class LimitOrderBookApi {
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(Placement.class, new PlacementDeserializer());
         gsonBuilder.registerTypeAdapter(Cancellation.class, new CancellationDeserializer());
+        gsonBuilder.registerTypeAdapter(Instant.class, new InstantSerializer());
         this.gson = gsonBuilder.create();
     }
 

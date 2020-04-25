@@ -29,8 +29,8 @@ public class DatabaseConfig {
 
     public String getUrl() {
         return "jdbc:postgresql://"
-                .concat(getHost()).concat(":" + getPort())
-                .concat("/").concat(getName());
+                .concat(host).concat(":" + port)
+                .concat("/").concat(name);
     }
 }
 

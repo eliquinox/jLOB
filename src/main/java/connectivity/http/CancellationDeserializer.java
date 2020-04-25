@@ -12,7 +12,7 @@ public class CancellationDeserializer implements JsonDeserializer<Cancellation> 
     public Cancellation deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
         JsonObject jsonObject = json.getAsJsonObject();
         return new Cancellation(
-                UUID.fromString(jsonObject.get("id").getAsString()),
+                UUID.fromString(jsonObject.get("uuid").getAsString()),
                 jsonObject.get("size").getAsLong()
         );
     }
