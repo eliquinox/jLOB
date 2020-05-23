@@ -71,18 +71,18 @@ public enum FixMessageHandler {
             limitOrderBook.place(placement);
             char ordStatus = averageSalePrice.equals(BigDecimal.ZERO) ? OrdStatus.NEW : OrdStatus.FILLED;
             double leavesQty = averageSalePrice.equals(BigDecimal.ZERO) ? amount : 0.;
-            return new ExecutionReport(
-                    new OrderID(placementId),
-                    new ExecID(randomUUID().toString()),
-                    new ExecTransType(ExecTransType.NEW),
-                    new ExecType(ordStatus),
-                    new OrdStatus(ordStatus),
-                    new Symbol("JLOB"),
-                    new quickfix.field.Side(msgSide),
-                    new LeavesQty(leavesQty),
-                    new CumQty(amount - leavesQty),
-                    new AvgPx(averageSalePrice.doubleValue())
-            );
+
+            final ExecutionReport executionReport = new ExecutionReport();
+            executionReport.set(new OrderID(placementId));
+            executionReport.set(new ExecID(randomUUID().toString()));
+            executionReport.set(new ExecTransType(ExecTransType.NEW));
+            executionReport.set(new ExecType(ordStatus));
+            executionReport.set(new OrdStatus(ordStatus));
+            executionReport.set(new quickfix.field.Side(msgSide));
+            executionReport.set(new LeavesQty(leavesQty));
+            executionReport.set(new CumQty(amount - leavesQty));
+            executionReport.set(new AvgPx(averageSalePrice.doubleValue()));
+            return executionReport;
         }
     },
 
