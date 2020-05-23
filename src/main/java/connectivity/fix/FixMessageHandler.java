@@ -1,5 +1,6 @@
 package connectivity.fix;
 
+import dto.Cancellation;
 import dto.Placement;
 import dto.Side;
 import quickfix.FieldNotFound;
@@ -14,6 +15,8 @@ import java.util.Map;
 
 import static dto.Placement.placement;
 import static java.util.Arrays.stream;
+import static java.util.UUID.fromString;
+import static java.util.UUID.randomUUID;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
 
@@ -59,7 +62,7 @@ public enum FixMessageHandler {
         @Override
         Message handle(Message message, LimitOrderBook limitOrderBook) throws FieldNotFound {
             char msgSide = message.getChar(quickfix.field.Side.FIELD);
-            Side side = message.getChar(quickfix.field.Side.FIELD) == '1' ? Side.BID : Side.OFFER;
+            Side side = msgSide == '1' ? Side.BID : Side.OFFER;
             long price = (long) message.getDouble(Price.FIELD);
             long amount = (long) message.getDouble(OrderQty.FIELD);
             Placement placement = placement().withSide(side).withPrice(price).withSize(amount).build();
@@ -70,7 +73,7 @@ public enum FixMessageHandler {
             double leavesQty = averageSalePrice.equals(BigDecimal.ZERO) ? amount : 0.;
             return new ExecutionReport(
                     new OrderID(placementId),
-                    new ExecID(placementId),
+                    new ExecID(randomUUID().toString()),
                     new ExecTransType(ExecTransType.NEW),
                     new ExecType(ordStatus),
                     new OrdStatus(ordStatus),
@@ -80,6 +83,25 @@ public enum FixMessageHandler {
                     new CumQty(amount - leavesQty),
                     new AvgPx(averageSalePrice.doubleValue())
             );
+        }
+    },
+
+    CANCEL_REPLACE_ORDER {
+        @Override
+        String getRequestMsgType() {
+            return MsgType.ORDER_CANCEL_REPLACE_REQUEST;
+        }
+
+        @Override
+        Message handle(Message message, LimitOrderBook limitOrderBook) throws FieldNotFound {
+            String orderId = message.getString(OrderID.FIELD);
+            long cancellationAmount = (long) message.getDouble(OrderQty.FIELD);
+            Cancellation cancellation = new Cancellation(fromString(orderId), cancellationAmount);
+            boolean isFullCancellation = limitOrderBook.cancel(cancellation);
+            final char execType = isFullCancellation ? ExecType.CANCELED : ExecType.REPLACED;
+            ExecutionReport executionReport = new ExecutionReport();
+            executionReport.set(new ExecType(execType));
+            return executionReport;
         }
     };
 

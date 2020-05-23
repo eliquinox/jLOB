@@ -128,17 +128,21 @@ public class LimitOrderBook implements Serializable {
         return level.place(placement);
     }
 
-    public synchronized void cancel(Cancellation cancellation) {
+    public synchronized boolean cancel(Cancellation cancellation) {
         Placement placement = placements.get(cancellation.getPlacementUuid());
         if (placement == null || cancellation.getSize() > placement.getSize())
             throw new JLOBException("Placement does not exist or cancellation size is inappropriate");
+
+        boolean isFullCancellation;
         if (cancellation.getSize() == placement.getSize()) {
             remove(placement);
+            isFullCancellation = true;
         } else {
             placement.reduce(cancellation.getSize());
+            isFullCancellation = false;
         }
-
         listener.onCancellation(cancellation, this);
+        return isFullCancellation;
     }
 
     private void remove(Placement placement) {
