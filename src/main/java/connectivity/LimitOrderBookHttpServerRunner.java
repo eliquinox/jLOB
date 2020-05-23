@@ -25,7 +25,7 @@ public class LimitOrderBookHttpServerRunner implements ServerRunner {
         path("book", () -> {
             get(ORIGIN, limitOrderBookApi.getLimitOrderBook);
             post(ORIGIN, limitOrderBookApi.placeOrder);
-            delete(ORIGIN, limitOrderBookApi.reduceOrder);
+            put(ORIGIN, limitOrderBookApi.reduceOrder);
         });
         post("vwap", limitOrderBookApi.getVwap);
     }

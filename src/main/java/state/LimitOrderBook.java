@@ -30,6 +30,7 @@ import static java.math.BigDecimal.valueOf;
  *
  * {@code Limit}s represent price levels in an order book and wrap around a collection of {@code Placement}s.
  *
+ * Access to the object is thread-safe.
  */
 
 @Singleton
@@ -74,10 +75,6 @@ public class LimitOrderBook implements Serializable {
 
     public static LimitOrderBook empty(){
         return new LimitOrderBook(new DummyLimitOrderBookListener());
-    }
-
-    public boolean isEmpty(){
-        return bids.isEmpty() && offers.isEmpty() && placements.isEmpty();
     }
 
     public synchronized void place(Placement placement) {
@@ -179,11 +176,11 @@ public class LimitOrderBook implements Serializable {
         return (bids.firstLongKey() + offers.firstLongKey()) / 2;
     }
 
-    public Stream<Long2ObjectMap.Entry<Limit>> streamBids() {
+    public synchronized Stream<Long2ObjectMap.Entry<Limit>> streamBids() {
         return bids.long2ObjectEntrySet().stream();
     }
 
-    public Stream<Long2ObjectMap.Entry<Limit>> streamOffers() {
+    public synchronized Stream<Long2ObjectMap.Entry<Limit>> streamOffers() {
         return offers.long2ObjectEntrySet().stream();
     }
 

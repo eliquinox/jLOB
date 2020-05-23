@@ -29,7 +29,7 @@ public enum FixMessageHandler {
         }
 
         @Override
-        Message handle(Message message, LimitOrderBook limitOrderBook) throws FieldNotFound {
+        Message handle(Message message, LimitOrderBook limitOrderBook) {
             MarketDataSnapshotFullRefresh msg = new MarketDataSnapshotFullRefresh();
             limitOrderBook.streamBids()
                     .forEachOrdered(limitEntry -> {
