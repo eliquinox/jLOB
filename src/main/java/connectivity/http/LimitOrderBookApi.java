@@ -32,19 +32,19 @@ public class LimitOrderBookApi {
 
     public Route getLimitOrderBook = (request, response) -> gson.toJson(limitOrderBook);
 
-    public Route placeOrder = ((request, response) -> {
+    public Route placeOrder = (request, response) -> {
         Placement placement = gson.fromJson(request.body(), Placement.class);
         limitOrderBook.place(placement);
         return gson.toJson(placement);
-    });
+    };
 
-    public Route reduceOrder = ((request, response) -> {
+    public Route reduceOrder = (request, response) -> {
         Cancellation cancellation = gson.fromJson(request.body(), Cancellation.class);
         limitOrderBook.cancel(cancellation);
         return gson.toJson(cancellation);
-    });
+    };
 
-    public Route getVwap = ((request, response) -> {
+    public Route getVwap = (request, response) -> {
         JsonParser parser = new JsonParser();
         JsonObject element = parser.parse(request.body()).getAsJsonObject();
         String action = element.get("action").getAsString();
@@ -53,5 +53,5 @@ public class LimitOrderBookApi {
         BigDecimal price = side == Side.BID ? limitOrderBook.getAveragePurchasePrice(size) :
                 limitOrderBook.getAverageSalePrice(size);
         return gson.toJson(Map.of("price", price));
-    });
+    };
 }
