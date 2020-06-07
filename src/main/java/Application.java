@@ -7,9 +7,14 @@ import db.Migrator;
 
 public class Application {
     public static void main(String[] args)  {
-        Injector injector = Guice.createInjector(new ApplicationModule(args[0]));
-        injector.getInstance(Migrator.class).migrate();
-        injector.getInstance(LimitOrderBookHttpServerRunner.class).run();
-        injector.getInstance(LimitOrderBookFixServerRunner.class).run();
+        try {
+            Injector injector = Guice.createInjector(new ApplicationModule(args[0]));
+            injector.getInstance(Migrator.class).migrate();
+            injector.getInstance(LimitOrderBookHttpServerRunner.class).run();
+            injector.getInstance(LimitOrderBookFixServerRunner.class).run();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
     }
 }
