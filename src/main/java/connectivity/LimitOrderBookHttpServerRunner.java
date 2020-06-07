@@ -7,7 +7,7 @@ import state.LimitOrderBook;
 import static spark.Spark.path;
 import static spark.Spark.get;
 import static spark.Spark.post;
-import static spark.Spark.delete;
+import static spark.Spark.put;
 
 
 public class LimitOrderBookHttpServerRunner implements ServerRunner {
