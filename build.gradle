@@ -125,4 +125,4 @@ task cleanGeneratedJooqFiles(type: Delete) {
 }
 
 tasks.clean.dependsOn(tasks.cleanGeneratedJooqFiles)
-tasks.runBook.dependsOn(tasks.generateJLobJooqSchemaSource)
+tasks.build.dependsOn(tasks.generateJLobJooqSchemaSource)
