@@ -1,6 +1,5 @@
 package config;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import lombok.NoArgsConstructor;
@@ -11,7 +10,6 @@ import java.io.IOException;
 
 @Setter
 @NoArgsConstructor
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class Config {
 
     private DatabaseConfig database;
