@@ -19,7 +19,6 @@ public class LimitOrderBookHttpServerRunner implements ServerRunner {
 
     @Override
     public void run() {
-        secure("keystore.jks", "password", null, null);
         path("/book", () -> {
             get(ORIGIN, limitOrderBookApi.getLimitOrderBook);
             post(ORIGIN, limitOrderBookApi.placeOrder);
