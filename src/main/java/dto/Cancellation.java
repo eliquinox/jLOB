@@ -5,15 +5,18 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import java.time.Instant;
 import java.util.UUID;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
 public class Cancellation {
 
     private final UUID placementUuid;
     private final Instant timestamp;
     private final long size;
 
-    public Cancellation(UUID placementId, long cancellationSize) {
+    public Cancellation(UUID placementUuid, long cancellationSize) {
+        checkArgument(cancellationSize > 0, "Invalid cancellation size");
         this.timestamp = Instant.now();
-        this.placementUuid = placementId;
+        this.placementUuid = placementUuid;
         this.size = cancellationSize;
     }
 
@@ -32,7 +35,7 @@ public class Cancellation {
     @Override
     public String toString() {
         return new ToStringBuilder(this)
-                .append("id", placementUuid)
+                .append("placementUuid", placementUuid)
                 .append("timestamp", timestamp)
                 .append("size", size)
                 .toString();

@@ -8,6 +8,7 @@ import com.google.inject.Inject;
 import dto.Cancellation;
 import dto.Placement;
 import dto.Side;
+import spark.ExceptionHandler;
 import spark.Route;
 import state.LimitOrderBook;
 
@@ -19,6 +20,8 @@ public class LimitOrderBookApi {
 
     private LimitOrderBook limitOrderBook;
     private Gson gson;
+    private JsonParser parser;
+
 
     @Inject
     public LimitOrderBookApi(LimitOrderBook limitOrderBook) {
@@ -28,6 +31,7 @@ public class LimitOrderBookApi {
         gsonBuilder.registerTypeAdapter(Cancellation.class, new CancellationDeserializer());
         gsonBuilder.registerTypeAdapter(Instant.class, new InstantSerializer());
         this.gson = gsonBuilder.create();
+        this.parser = new JsonParser();
     }
 
     public Route getLimitOrderBook = (request, response) -> gson.toJson(limitOrderBook);
@@ -45,7 +49,6 @@ public class LimitOrderBookApi {
     };
 
     public Route getVwap = (request, response) -> {
-        JsonParser parser = new JsonParser();
         JsonObject element = parser.parse(request.body()).getAsJsonObject();
         String action = element.get("action").getAsString();
         Side side = Side.fromString(action);
@@ -53,5 +56,10 @@ public class LimitOrderBookApi {
         BigDecimal price = side == Side.BID ? limitOrderBook.getAveragePurchasePrice(size) :
                 limitOrderBook.getAverageSalePrice(size);
         return gson.toJson(Map.of("price", price));
+    };
+
+    public ExceptionHandler<Exception> handleException = (exception, request, response) -> {
+        response.status(422);
+        response.body(gson.toJson(Map.of("error", exception.getMessage())));
     };
 }

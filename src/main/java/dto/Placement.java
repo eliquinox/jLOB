@@ -7,6 +7,7 @@ import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
 
@@ -33,6 +34,8 @@ public class Placement implements Serializable {
     }
 
     private Placement(Builder builder) {
+        checkArgument(builder.price > 0, "Invalid placement price");
+        checkArgument(builder.size > 0, "Invalid placement size");
         this.uuid = builder.uuid.orElse(UUID.randomUUID());
         this.timestamp = builder.timestamp.orElse(Instant.now());
         this.side = builder.side;

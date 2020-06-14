@@ -73,7 +73,7 @@ public class LimitOrderBook implements Serializable {
         this.placements = new Object2ObjectOpenHashMap<>();
     }
 
-    public static LimitOrderBook empty(){
+    public static LimitOrderBook empty() {
         return new LimitOrderBook(new DummyLimitOrderBookListener());
     }
 
