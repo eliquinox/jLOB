@@ -202,14 +202,14 @@ public class LimitOrderBook implements Serializable {
 
     private BigDecimal getAveragePrice(long size, Long2ObjectRBTreeMap<Limit> levels) {
         long psizesum = 0L, sizesum = 0L;
-        for(Limit limit : levels.values()) {
+        for (Limit limit : levels.values()) {
             long unfilled_size = size - sizesum;
             long price = limit.getPrice();
             long volume = limit.getVolume();
             long s = Math.min(unfilled_size, volume);
             sizesum += s;
             psizesum += s * price;
-            if(sizesum >= size)
+            if (sizesum >= size)
                 return valueOf(sizesum).equals(BigDecimal.ZERO) ? BigDecimal.ZERO :
                         valueOf(psizesum).divide(valueOf(size), 2, RoundingMode.HALF_UP);
         }
