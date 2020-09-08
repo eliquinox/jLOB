@@ -5,6 +5,9 @@ jLOB has all the basic capabilities of a functional exchange.
 Custom business logic can be defined by implementing orderbook listeners. 
 It currently supports HTTP and FIX protocol communication.
 
+There is also a [UI repository](https://github.com/eliquinox/lob-ui) that allows interacting with the orderbook.
+Full sample deployment: https://lob.eliquinox.com/
+
 ### Configuration
 
 `PersistenceLimitOrderBookListener.java` defines logic for storing orderbook events and caching orderbook state.
