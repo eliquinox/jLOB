@@ -8,6 +8,7 @@ import config.RedisConfig;
 import connectivity.LimitOrderBookFixServerRunner;
 import connectivity.LimitOrderBookHttpServerRunner;
 import db.Migrator;
+import org.jooq.ConnectionProvider;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
 import state.LimitOrderBook;
@@ -15,6 +16,7 @@ import state.LimitOrderBookListener;
 import state.PersistenceLimitOrderBookListener;
 
 import java.io.IOException;
+import java.util.function.Supplier;
 
 import static config.Config.fromPath;
 
@@ -38,8 +40,8 @@ public class ApplicationModule extends AbstractModule {
 
     @Provides
     @Singleton
-    public DSLContext dslContext(DatabaseConfig databaseConfig) {
-        return DSL.using(
+    public Supplier<DSLContext> dslContext(DatabaseConfig databaseConfig) {
+        return () -> DSL.using(
                 databaseConfig.getUrl(),
                 databaseConfig.getUsername(),
                 databaseConfig.getPassword()
@@ -72,7 +74,7 @@ public class ApplicationModule extends AbstractModule {
     }
 
     @Provides
-    public LimitOrderBookListener listener(DSLContext database, Cache cache) {
+    public LimitOrderBookListener listener(Supplier<DSLContext> database, Cache cache) {
         return new PersistenceLimitOrderBookListener(cache, database);
     }
 

@@ -4,16 +4,18 @@ import db.jooq.tables.records.MatchesRecord;
 import dto.Match;
 import org.jooq.DSLContext;
 
+import java.util.function.Supplier;
+
 public class MatchesPersistence {
 
-    private final DSLContext database;
+    private final Supplier<DSLContext> database;
 
-    public MatchesPersistence(DSLContext database) {
+    public MatchesPersistence(Supplier<DSLContext> database) {
         this.database = database;
     }
 
     public void persistMatch(Match match) {
-        database.executeInsert(toRecord(match));
+        database.get().executeInsert(toRecord(match));
     }
 
     public static MatchesRecord toRecord(Match match) {

@@ -10,6 +10,8 @@ import dto.Match;
 import dto.Placement;
 import org.jooq.DSLContext;
 
+import java.util.function.Supplier;
+
 
 public class PersistenceLimitOrderBookListener implements LimitOrderBookListener {
 
@@ -19,7 +21,7 @@ public class PersistenceLimitOrderBookListener implements LimitOrderBookListener
     private final MatchesPersistence matchesPersistence;
 
     @Inject
-    public PersistenceLimitOrderBookListener(Cache cache, DSLContext database) {
+    public PersistenceLimitOrderBookListener(Cache cache, Supplier<DSLContext> database) {
         this.cache = cache;
         this.placementsPersistence = new PlacementsPersistence(database);
         this.cancellationsPersistence = new CancellationsPersistence(database);
