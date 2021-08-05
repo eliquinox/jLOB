@@ -12,8 +12,8 @@ import java.io.IOException;
 @NoArgsConstructor
 public class Config {
 
-    private DatabaseConfig database;
-    private RedisConfig redis;
+    public DatabaseConfig database;
+    public RedisConfig redis;
 
     public static Config fromPath(String path) throws IOException {
         ObjectMapper mapper = new ObjectMapper(new YAMLFactory());

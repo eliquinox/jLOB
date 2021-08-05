@@ -39,7 +39,6 @@ public class ApplicationModule extends AbstractModule {
     }
 
     @Provides
-    @Singleton
     public Supplier<DSLContext> dslContext(DatabaseConfig databaseConfig) {
         return () -> DSL.using(
                 databaseConfig.getUrl(),
