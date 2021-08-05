@@ -126,3 +126,15 @@ task cleanGeneratedJooqFiles(type: Delete) {
 
 tasks.clean.dependsOn(tasks.cleanGeneratedJooqFiles)
 tasks.build.dependsOn(tasks.generateJLobJooqSchemaSource)
+
+task bookJar(type: Jar) {
+    destinationDirectory = buildDir
+    archiveFileName = 'book.jar'
+    manifest {
+        attributes 'Main-Class': 'Application'
+    }
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+    with jar
+}
